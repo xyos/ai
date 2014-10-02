@@ -57,16 +57,16 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
     System.gc();
     if( cmd.size() == 0 ){
 
-      boolean PF = ( (Boolean) p.getAttribute(language.getPercept(0))).
-          booleanValue();
-      boolean PD = ( (Boolean) p.getAttribute(language.getPercept(1))).
-          booleanValue();
-      boolean PA = ( (Boolean) p.getAttribute(language.getPercept(2))).
-          booleanValue();
-      boolean PI = ( (Boolean) p.getAttribute(language.getPercept(3))).
-          booleanValue();
-      boolean MT = ( (Boolean) p.getAttribute(language.getPercept(4))).
-          booleanValue();
+        boolean PF = (Boolean) p.getAttribute(language.getPercept(0));
+        boolean PD = (Boolean) p.getAttribute(language.getPercept(1));
+        boolean PA = (Boolean) p.getAttribute(language.getPercept(2));
+        boolean PI = (Boolean) p.getAttribute(language.getPercept(3));
+        boolean MT = (Boolean) p.getAttribute(language.getPercept(4));
+        boolean AF = (Boolean) p.getAttribute(language.getPercept(5));
+        boolean AD = (Boolean) p.getAttribute(language.getPercept(6));
+        boolean AA = (Boolean) p.getAttribute(language.getPercept(7));
+        boolean AI = (Boolean) p.getAttribute(language.getPercept(8));
+
       
       //System.out.println("---------------\nPocisión: "+actualNode.getX()+","+actualNode.getY()+"\nBrújula: "+norte);
       //System.out.println("ToNorth:"+actualNode.exploredStates[0]+", ToEast:"+actualNode.exploredStates[1]+", ToSouth:"+actualNode.exploredStates[2]+", ToWest:"+actualNode.exploredStates[3]);
