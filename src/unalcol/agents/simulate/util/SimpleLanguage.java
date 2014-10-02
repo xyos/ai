@@ -1,7 +1,5 @@
 package unalcol.agents.simulate.util;
 
-import unalcol.agents.simulate.gui.*;
-
 public class SimpleLanguage implements Language{
   protected String[] percepts = null;
   protected String[] actions = null;

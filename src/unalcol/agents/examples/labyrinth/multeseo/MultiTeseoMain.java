@@ -29,28 +29,7 @@ public class MultiTeseoMain {
 
      teseo[2] = new TeseoSimple();
      ((TeseoSimple)teseo[2]).setLanguage(getLanguage());
-     /* Equipo: TargetTeam * /
-    
-     teseo[3] = new AgentTarget();
-     ((AgentTarget)teseo[3]).setLanguage(getLanguage());
-     /* Equipo: Piratas del Caribe * /
-     teseo[4] = new TeseoPerlaNegra();
-     ((TeseoPerlaNegra)teseo[4]).setLanguage(getLanguage());
-     /* Equipo: Brutalidad * /
-     teseo[5] = new TeseoCompetitor(getLanguage());        
-     /* Equipo: Rocket * /
-     teseo[6] = new TournamentAgent();
-     ((TournamentAgent)teseo[6]).setLanguage(getLanguage()); 
-     /* Equipo: Sinergia * /
-     teseo[7] = new ChampionshipAgent(getLanguage());
-     /* Equipo: UNgrupo * /
-     teseo[8] = new TeseoUNgrupo(getLanguage());        
-     /* Equipo: Los Rolos * /
-     teseo[9] = new TheAgentLosRolos(getLanguage());
-     /* Equipo: TeseoCai * /
-     teseo[10] = new TesoCai();
-     ((TesoCai)teseo[10]).setLanguage(getLanguage());                              
-    */  
+     
     int index1 = 0;
     int index2 = 2;
     

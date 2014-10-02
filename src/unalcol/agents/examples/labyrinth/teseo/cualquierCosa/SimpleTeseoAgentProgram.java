@@ -25,7 +25,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
   protected SimpleLanguage language;
   protected Vector<String> cmd = new Vector<String>();
   protected Graph myGraph = new Graph();
-  protected GraphNode actualNode =myGraph.getRoot();
+  protected GraphNode actualNode = myGraph.getRoot();
   public enum Compass {NORTH, EAST, SOUTH, WEST}
   protected Compass north = Compass.NORTH;
   protected Stack<GraphNode> goBackSolution = new Stack<>();
@@ -67,7 +67,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         boolean AI = (Boolean) p.getAttribute(language.getPercept(8));
         if (cmd.size() == 0) {
 
-      //System.out.println("---------------\nPocisión: "+actualNode.getX()+","+actualNode.getY()+"\nBrújula: "+norte);
+      //System.out.println("---------------\nPocisión: "+actualNode.getX()+","+actualNode.getY()+"\nBrújula: "+north);
             //System.out.println("ToNorth:"+actualNode.exploredStates[0]+", ToEast:"+actualNode.exploredStates[1]+", ToSouth:"+actualNode.exploredStates[2]+", ToWest:"+actualNode.exploredStates[3]);
             //System.out.println("Graph: "); printNodes();
             //System.out.println("---------------");
@@ -113,7 +113,6 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
             if (AF) {
                 System.out.println("agente al frente");
                 x = language.getAction(0);
-                cmd.add(x);
             }
         }
         cmd.remove(0);
@@ -140,6 +139,12 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
             cmd.add(language.getAction(0)); // die
             return;
         }
+        
+        if(actualNode.equals(node.getMyGraphNode())){
+            cmd.add(language.getAction(0));
+            return;
+        }
+        
         if(node.getParent()==null) goBackSolution.push(node.getMyGraphNode());
         while(node.getParent()!=null){
             goBackSolution.push(node.getMyGraphNode());

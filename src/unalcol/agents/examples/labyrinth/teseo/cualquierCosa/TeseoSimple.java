@@ -43,22 +43,22 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
         return (val+3)%4;
     }
     
-    public void computeChoices(boolean PF,boolean PD,boolean PI, boolean PA, Stack<Integer> stack){
+    public void computeChoices(boolean PF,boolean PD,boolean PI, boolean PA, boolean AF, boolean AD, boolean AA, boolean AI, Stack<Integer> stack){
         Compass realNorth=north;
         Stack<Integer> aux = new Stack<>();
         
-        if(!PF){ aux.push(0);}
+        if(!PF){ if(!AF) aux.push(0);}
         else{
             int index = getIndexExploredStates();
             actualNode.exploredStates[index]=true;
         }        
-        if(!PD){ aux.push(1);}
+        if(!PD){ if(!AD) aux.push(1);}
         else{
             int index = getIndexExploredStates();
             index=(index+1)%4;
             actualNode.exploredStates[index]=true;
         }        
-        if(!PI){ aux.push(3);}
+        if(!PI){ if(!AI) aux.push(3);}
         else{
             int index = getIndexExploredStates();
             index=(index+3)%4;
@@ -70,13 +70,17 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
             if(actualNode.equals(myGraph.getRoot())){
                 int index = getIndexExploredStates();
                 if(!knownNode(nextMove())&&!actualNode.exploredStates[index]){
-                    stack.push(2);
+                    if(!AA) stack.push(2);
                 }
             }else{
                 int index = getIndexExploredStates();
-                actualNode.exploredStates[index]=true; 
+                actualNode.exploredStates[index]=true;
             }
-        } else{ actualNode.exploredStates[2]=true; }
+        } else{ 
+            int index = getIndexExploredStates();
+            index = (index+2)%4;
+            actualNode.exploredStates[index]=true; //Antes era con index = 2
+        }
         
         while(!aux.isEmpty()){
             north=realNorth;
@@ -111,7 +115,7 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
         if(actualNode.getWalls()==2) this.TwoWallsNodes.add(actualNode);
         Stack<Integer> nextMoves = new Stack<>();
         
-        computeChoices(PF, PD, PI, PA, nextMoves);
+        computeChoices(PF, PD, PI, PA, AF, AD, AA, AI, nextMoves);
         
         Collections.shuffle(nextMoves);// Decisión Aleatoria, si se comenta: forward, right, left
         Collections.shuffle(nextMoves);

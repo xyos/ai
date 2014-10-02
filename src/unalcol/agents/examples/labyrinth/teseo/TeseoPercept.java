@@ -1,6 +1,5 @@
 package unalcol.agents.examples.labyrinth.teseo;
 import unalcol.agents.examples.labyrinth.*;
-import unalcol.agents.Percept;
 
 import java.awt.Graphics;
 import unalcol.agents.simulate.util.*;
