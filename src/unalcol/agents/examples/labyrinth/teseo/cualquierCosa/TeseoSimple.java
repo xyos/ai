@@ -104,7 +104,8 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
 
     public TeseoSimple() {}
     @Override
-    public int accion(boolean PF, boolean PD, boolean PA, boolean PI, boolean MT) {
+    public int accion(boolean PF, boolean PD, boolean PA, boolean PI, boolean MT,
+            boolean AF, boolean AD, boolean AA, boolean AI) {
         if (MT) return -1;
         actualNode.setWalls(getWalls(PF,PD,PI,PA));
         if(actualNode.getWalls()==2) this.TwoWallsNodes.add(actualNode);

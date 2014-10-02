@@ -45,7 +45,8 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
     cmd.clear();
   }
 
-  public abstract int accion( boolean PF, boolean PD, boolean PA, boolean PI, boolean MT );
+  public abstract int accion( boolean PF, boolean PD, boolean PA, boolean PI, boolean MT,
+          boolean AF, boolean AD, boolean AA, boolean AI);
 
   /**
    * execute
@@ -73,7 +74,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
       //System.out.println("Graph: "); printNodes();
       //System.out.println("---------------");
       //new java.util.Scanner(System.in).nextLine(); //Sirve para ver el proceso paso paso.
-      int d = accion(PF, PD, PA, PI, MT);
+      int d = accion(PF, PD, PA, PI, MT, AF, AD, AA, AI);
       if (0 <= d && d < 4) {
         for (int i = 1; i <= d; i++) {
           cmd.add(language.getAction(3)); //rotate
