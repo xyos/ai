@@ -2,6 +2,7 @@ package unalcol.agents.examples.labyrinth.teseo.cualquierCosa;
 
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.Stack;
 import unalcol.agents.AgentProgram;
 import unalcol.agents.Percept;
@@ -28,7 +29,8 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
   protected GraphNode actualNode = myGraph.getRoot();
   public enum Compass {NORTH, EAST, SOUTH, WEST}
   protected Compass north = Compass.NORTH;
-  protected Stack<GraphNode> goBackSolution = new Stack<>();
+  protected Stack<GraphNode> goBackSolution = new Stack<>(); //Son los nodods que debe visitar para llegar a un nodo de desición anterior
+  protected LinkedList<Point> EdgeStates = new LinkedList(); //Son los nodos intermedios que hay entre dos nodos cuando se acorta el grafo
   protected boolean isNewNode=true;
   protected boolean singlePath=false;
   protected ArrayList<GraphNode> TwoWallsNodes = new ArrayList<>();
@@ -66,38 +68,53 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         boolean AA = (Boolean) p.getAttribute(language.getPercept(7));
         boolean AI = (Boolean) p.getAttribute(language.getPercept(8));
         if (cmd.size() == 0) {
-
-      //System.out.println("---------------\nPocisión: "+actualNode.getX()+","+actualNode.getY()+"\nBrújula: "+north);
+            //System.out.println("---------------\nPocisión: "+actualNode.getX()+","+actualNode.getY()+"\nBrújula: "+north);
             //System.out.println("ToNorth:"+actualNode.exploredStates[0]+", ToEast:"+actualNode.exploredStates[1]+", ToSouth:"+actualNode.exploredStates[2]+", ToWest:"+actualNode.exploredStates[3]);
             //System.out.println("Graph: "); printNodes();
             //System.out.println("---------------");
             //new java.util.Scanner(System.in).nextLine(); //Sirve para ver el proceso paso paso.
-            int d = accion(PF, PD, PA, PI, MT, AF, AD, AA, AI);
-            if (0 <= d && d < 4) {
-                for (int i = 1; i <= d; i++) {
-                    cmd.add(language.getAction(3)); //rotate
-                    rotar(1);
+            
+            if(!EdgeStates.isEmpty()){
+                Point removed = EdgeStates.poll();
+                goTo(removed);
+                if(EdgeStates.isEmpty()) actualNode = myGraph.SearchNode(removed.x, removed.y);
+                else actualNode = new GraphNode(removed.x,removed.y);
+            }
+            else{
+                if(!goBackSolution.isEmpty()){
+                    processGoBackSolution();
                 }
-                cmd.add(language.getAction(2)); // advance
+                
+                else{
+                    
+                    int d = accion(PF, PD, PA, PI, MT, AF, AD, AA, AI);
+                    if (0 <= d && d < 4) {
+                        for (int i = 1; i <= d; i++) {
+                            cmd.add(language.getAction(3)); //rotate
+                            rotar(1);
+                        }
+                        cmd.add(language.getAction(2)); // advance
 
-                GraphNode newNode = nextMove();
-                if (!knownNode(newNode)) {
-                    actualNode.addNeighbor(newNode, 1);
-                    actualNode = newNode;
-                    myGraph.addNode(actualNode);
-                    isNewNode = true;
-                } else {
-                    actualNode = myGraph.SearchNode(actualNode.getX(), actualNode.getY());
-                    isNewNode = false;
-                }
-                myGraph.reduceGraph(this.TwoWallsNodes);
-            } else {
-                if (d == 5) {
-                    myGraph.reduceGraph(this.TwoWallsNodes);
-                    goBackDecisionNode(actualNode);
-                }
-                if (d == -1) {
-                    cmd.add(language.getAction(1)); // die
+                        GraphNode newNode = nextMove();
+                        if (!knownNode(newNode)) {
+                            actualNode.addNeighbor(newNode, 1);
+                            actualNode = newNode;
+                            myGraph.addNode(actualNode);
+                            isNewNode = true;
+                        } else {
+                            actualNode = myGraph.SearchNode(actualNode.getX(), actualNode.getY());
+                            isNewNode = false;
+                        }
+                        myGraph.reduceGraph(this.TwoWallsNodes);
+                    } else {
+                        if (d == 5) {
+                            myGraph.reduceGraph(this.TwoWallsNodes);
+                            goBackDecisionNode(actualNode);
+                        }
+                        if (d == -1) {
+                            cmd.add(language.getAction(1)); // die
+                        }
+                    }
                 }
             }
         }
@@ -150,30 +167,15 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
             goBackSolution.push(node.getMyGraphNode());
             node=node.getParent();
         }
+        
         //System.out.println("-----GoBackSolution-----");
-        while(!goBackSolution.isEmpty()){
-            GraphNode gNode = goBackSolution.pop();
-            //System.out.println("ActualNode: "+actualNode.getX()+","+actualNode.getY());
-            //System.out.println("nextNode: "+gNode.getX()+","+gNode.getY());
-            Edge edge = actualNode.searchEdge(gNode);
-            if (edge.getStates().isEmpty()){
-                goTo(gNode.getX(),gNode.getY());
-            }else{
-                for(Point p:edge.getStates()){
-                    goTo(p.x,p.y);
-                    actualNode= new GraphNode(p.x,p.y);
-                }
-                goTo(gNode.getX(), gNode.getY());
-            }
-            actualNode=gNode;
-        }
-        isNewNode=false;
+        processGoBackSolution();
         //System.out.println("-----GoBackSolution-----");        
     }
     
-    private void goTo(int x, int y){
-        int dx= x-actualNode.getX();
-        int dy= y-actualNode.getY();
+    private void goTo(Point p){
+        int dx= p.x-actualNode.getX();
+        int dy= p.y-actualNode.getY();
         if (dx==0&&dy==0) return;
         if (dx==1){
             rotateTo(Compass.EAST); cmd.add(language.getAction(2));
@@ -253,5 +255,28 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                   break;
         }
         return a;      
+    }
+    
+    private void processGoBackSolution(){ //Procesa un item del stack goBackSolution
+        GraphNode gNode = goBackSolution.pop();
+        //System.out.println("ActualNode: "+actualNode.getX()+","+actualNode.getY());
+        //System.out.println("nextNode: "+gNode.getX()+","+gNode.getY());
+        Edge edge = actualNode.searchEdge(gNode);
+        if (edge.getStates().isEmpty()){
+            Point point = new Point(gNode.getX(),gNode.getY());
+            goTo(point);
+            actualNode=gNode;
+        }else{
+            for(Point point:edge.getStates()){
+                EdgeStates.add(point);
+            }
+            Point point = new Point(gNode.getX(),gNode.getY()); //Añade el nodo gNode a la queue, ya que no esta en los States del edge
+            EdgeStates.add(point);
+
+            Point removed = EdgeStates.poll();
+            goTo(removed);
+            actualNode = new GraphNode(removed.x,removed.y);
+        }
+        isNewNode=false;
     }
 }
