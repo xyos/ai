@@ -7,8 +7,10 @@
 package unalcol.agents.examples.labyrinth.teseo.cualquierCosa;
 
 
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Stack;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -20,23 +22,31 @@ public class ExpansionTreeSearch {
     private SearchTree tree;
     private final GraphNode root;
     private GraphNode goal;
-    private TreeNode actualNode = new TreeNode();
+    private TreeNode actualNode;
     private int limitDepth;
     private boolean idsNoPosibleSolution;
+    private boolean agentAvoided;
+    private HashMap<Point,Object> nodes;
     
     public ExpansionTreeSearch(GraphNode root, GraphNode goal){
         this.root=root;
-        newTree();
+        this.tree = new SearchTree(root);
         this.goal=goal;
+        this.nodes= new HashMap<>(130);
+        this.nodes.put(new Point(root.getX(),root.getY()), null);
     }
     
     public ExpansionTreeSearch(GraphNode root){
         this.root=root;
-        newTree();
+        this.tree = new SearchTree(root);
+        this.nodes= new HashMap<>(130);
+        this.nodes.put(new Point(root.getX(),root.getY()), null);
     }
     
-    public final void newTree(){
-        this.tree=new SearchTree(root);
+    public final void initTree(){
+        this.tree.initTree();
+        this.nodes.clear();
+        this.nodes.put(new Point(root.getX(),root.getY()), null);
     }
 
     public SearchTree getTree() {
@@ -67,12 +77,16 @@ public class ExpansionTreeSearch {
         return actualNode.equals(tree.getRoot());
     }
     
-    public boolean isPreviousState(GraphNode a){
+    public boolean isPreviousState1(GraphNode a){ 
         return (a.getX()==actualNode.getParent().getMyGraphNode().getX() && a.getY()==actualNode.getParent().getMyGraphNode().getY());
     }
     
-    public TreeNode Bfs(){
-        newTree();
+    private boolean isPreviousState2(GraphNode node){ // Determina si uno nodo ya fue añadido a la exploracion para no volver a pasar por el (evita ciclos)
+        return this.nodes.containsKey(new Point (node.getX(),node.getY()));
+    }
+    
+    public TreeNode Bfs(){ //No usar, hay que revisarlo
+        initTree();
         LinkedBlockingQueue queue = new LinkedBlockingQueue();
         queue.add(tree.getRoot());
         while(!queue.isEmpty()){
@@ -88,12 +102,12 @@ public class ExpansionTreeSearch {
         return null;
     }
     
-    public void sucesor(ArrayList<TreeNode> list){
+    public void sucesor(ArrayList<TreeNode> list){ //No usarlo, hay que revisarlo
         boolean isRoot = isRoot();
         
         for(Edge e :actualNode.getMyGraphNode().getNeighbors()){
-            if(isRoot|| !isPreviousState(e.getGNode())){
-                TreeNode node = new TreeNode(tree.getNodeNumber(), e.getGNode());
+            if(isRoot|| !isPreviousState1(e.getGNode())){
+                TreeNode node = new TreeNode(e.getGNode());
                 node.setParent(actualNode);
                 actualNode.addChild(node, e.getEdgeCost());
                 node.costFromRoot();
@@ -101,7 +115,7 @@ public class ExpansionTreeSearch {
                 list.add(node);
             }else{
                 if(!actualNode.getParent().getMyGraphNode().equals(e.getGNode())){
-                    TreeNode node = new TreeNode(tree.getNodeNumber(), e.getGNode());
+                    TreeNode node = new TreeNode(e.getGNode());
                     node.setParent(actualNode);
                     actualNode.addChild(node, e.getEdgeCost());
                     node.costFromRoot();
@@ -113,16 +127,14 @@ public class ExpansionTreeSearch {
     }
     
     public void sucesorDFS(ArrayList<TreeNode> list){
-        boolean isRoot = isRoot();
         
         for(Edge e :actualNode.getMyGraphNode().getNeighbors()){
-            if( isRoot || (!isPreviousState(e.getGNode())&& e.getGNode().getWalls()!=3 ) ){
-                //System.out.println(e.getGNode().getX()+", "+e.getGNode().getY());
-                TreeNode node = new TreeNode(tree.getNodeNumber(), e.getGNode());
+            if( isRoot() || (!isPreviousState2(e.getGNode()) && e.getGNode().getWalls()!=3 ) ){
+                TreeNode node = new TreeNode(e.getGNode());
                 node.setParent(actualNode);
                 actualNode.addChild(node, e.getEdgeCost());
                 node.setCostFromRoot(actualNode.getCostFromRoot()+e.getEdgeCost());
-                if(node.getCostFromRoot()>limitDepth){
+                if(node.getCostFromRoot()>this.limitDepth){
                     actualNode.removeChild(node);
                     this.idsNoPosibleSolution=false;
                 }else{
@@ -133,8 +145,8 @@ public class ExpansionTreeSearch {
         }
     }
     
-    public TreeNode Dfs(int limite){
-        newTree();
+    public TreeNode Dfs(int limite){ //No usar, hay que arreglalo
+        initTree();
         this.limitDepth=limite;
         Stack<TreeNode> stack = new Stack<>();
         stack.push(tree.getRoot());
@@ -151,25 +163,37 @@ public class ExpansionTreeSearch {
         return null;
     }
     
-    public TreeNode Ids(int lim){
-        this.idsNoPosibleSolution=false;
+    public TreeNode Ids(int lim, Point agentPos){
+        this.idsNoPosibleSolution=false;        
+        ArrayList<TreeNode> list = new ArrayList<>();
         for(int i=1;i<=lim;i++){
             System.gc();
             this.idsNoPosibleSolution=true;
-            newTree();
+            this.agentAvoided=false;
+            initTree();
             this.limitDepth=i;
             Stack<TreeNode> stack = new Stack<>();
-            //System.out.println("Limite "+i+":\n----------");
             stack.push(tree.getRoot());
             while(!stack.isEmpty()){
                 actualNode = stack.pop();
-                //System.out.println("Nodo "+actualNode.getMyGraphNode().getX()+", "+actualNode.getMyGraphNode().getY()+"; choices:"+actualNode.getMyGraphNode().getChoices());
-                if(actualNode.getMyGraphNode().getChoices()>=1) return actualNode;
-                ArrayList<TreeNode> list = new ArrayList<>();
+                if(actualNode.getMyGraphNode().getChoices()>=1 && !actualNode.getMyGraphNode().equals(this.root)){
+                    return actualNode;
+                }
+                list.clear();
                 sucesorDFS(list);
                 Collections.shuffle(list);
                 for(TreeNode n:list){
-                    stack.push(n);
+                    if(agentPos!=null){
+                        if(agentPos.x==n.getMyGraphNode().getX() && agentPos.y==n.getMyGraphNode().getY() && !this.agentAvoided){
+                            this.agentAvoided=true;
+                        }else{
+                            stack.push(n);
+                            this.nodes.put(new Point(n.getMyGraphNode().getX(),n.getMyGraphNode().getY()), null);
+                        }
+                    }else{
+                        stack.push(n);
+                        this.nodes.put(new Point(n.getMyGraphNode().getX(),n.getMyGraphNode().getY()), null);
+                    }
                 }
             }
             if(this.idsNoPosibleSolution) return null;

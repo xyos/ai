@@ -46,8 +46,14 @@ public class SearchTree {
         if(a.getCostFromRoot()>this.depth) this.depth=a.getCostFromRoot();
     }
     
+    public void initTree(){
+        this.depth=0;
+        this.nodeNumber=1;
+        this.root.clearChildren();
+    }
+    
     public SearchTree(GraphNode g){
-        TreeNode node = new TreeNode(0, g);
+        TreeNode node = new TreeNode(g);
         node.setParent(null);
         node.costFromRoot();
         this.depth=0;

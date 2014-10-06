@@ -66,7 +66,7 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
         }
         
         if(!PA){
-            rotar(2);
+            rotate(2);
             if(actualNode.equals(myGraph.getRoot())){
                 int index = getIndexExploredStates();
                 if(!knownNode(nextMove())&&!actualNode.exploredStates[index]){
@@ -85,7 +85,7 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
         while(!aux.isEmpty()){
             north=realNorth;
             int result = aux.pop();
-            rotar(result);
+            rotate(result);
             if(knownNode(nextMove())){
                 if(isNewNode) {
                     int index = getIndexExploredStates();
@@ -130,6 +130,15 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
         actualNode.calChoices();
         //System.out.println("Nodo ("+actualNode.getX()+","+actualNode.getY()+").choices="+actualNode.getChoices());
         return pop;
+    }
+
+    @Override
+    public int findOtherWay(boolean PF, boolean PD, boolean PA, boolean PI, boolean MT, boolean AF, boolean AD, boolean AA, boolean AI) {
+        if(!PF && !AF) return 0;        
+        if(!PD && !AD) return 1;        
+        if(!PI && !AI) return 3;        
+        if(!PA && !AA) return 2;
+        return 5;
     }
     
 }

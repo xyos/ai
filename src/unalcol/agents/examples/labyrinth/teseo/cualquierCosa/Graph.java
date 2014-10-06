@@ -121,7 +121,7 @@ public class Graph {
     
     public Stack<TreeNode> minExpansionTree(GraphNode root, GraphNode goal){
         ExpansionTreeSearch search = new ExpansionTreeSearch(root, goal);
-        TreeNode node = search.Ids(100);
+        TreeNode node = search.Ids(100,null);
         if(node==null) return null;
         
         Stack<TreeNode> solution = new Stack<>();
