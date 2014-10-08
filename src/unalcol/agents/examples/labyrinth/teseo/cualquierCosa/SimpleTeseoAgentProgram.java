@@ -203,8 +203,6 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                 rotate(1);
             }
             cmd.add(language.getAction(2)); // advance
-            actualNode = nextMove();
-            if(knownNode(actualNode)) AgentFindOtherWay=false;
         }
     }
     
