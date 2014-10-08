@@ -11,7 +11,6 @@ import java.awt.Point;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.Stack;
 
 /**
  *
@@ -62,12 +61,14 @@ public class Graph {
         ArrayList<GraphNode> nodeList = new ArrayList<>();
         nodeList.addAll(twoWallsNodes);
         for(GraphNode node:nodeList){
-            if(node.getNeighbors().size()==1 && node.getChoices()==0){          //Sirve pare el caso de ciclos
+            /*if(node.getNeighbors().size()==1 && node.getChoices()==0){          //Sirve pare el caso de ciclos
+                System.out.println("Nodo ("+node.getX()+","+node.getY()+") removido por ciclo");
                 node.getNeighbors().get(0).getGNode().removeNeighbor(node);
                 this.removeNode(node);
                 twoWallsNodes.remove(node);
-            }
-            if(node.getNeighbors().size()==2){                
+            }*/
+            if(node.getNeighbors().size()==2){
+                //System.out.println("Nodo ("+node.getX()+","+node.getY()+") removido");
                 Edge a = node.getNeighbors().get(0);
                 Edge b = node.getNeighbors().get(1);
 
@@ -117,19 +118,6 @@ public class Graph {
     public void eraseNode(GraphNode a){
         this.nodes.remove(new Point(a.getX(),a.getY()));
         this.nodeNumber--;
-    }
-    
-    public Stack<TreeNode> minExpansionTree(GraphNode root, GraphNode goal){
-        ExpansionTreeSearch search = new ExpansionTreeSearch(root, goal);
-        TreeNode node = search.Ids(100,null);
-        if(node==null) return null;
-        
-        Stack<TreeNode> solution = new Stack<>();
-        while(node.getParent()!=null){
-            solution.push(node);
-            node=node.getParent();
-        }
-        return solution;
     }
     
 }

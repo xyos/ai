@@ -20,7 +20,7 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
         Con -1 muere   
         Con 5 ejecuta la funcion para encontar el nodo de decision mas cercano
     */
-    public int getWalls(boolean PF,boolean PD,boolean PI,boolean PA){
+    public int getWalls(boolean PF,boolean PD,boolean PA,boolean PI){
         int walls=0;
         if(PF) walls++;
         if(PD) walls++;
@@ -29,36 +29,22 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
         return walls;
     }
     
-    public int getIndexExploredStates(){
-        if(north.equals(Compass.NORTH)) return 0;
-        if(north.equals(Compass.SOUTH)) return 2;
-        if(north.equals(Compass.EAST)) return 1;
-        return 3;
-    }
-    
-    public int getIndexExplorationStates2(int val){
-        if(north.equals(Compass.NORTH)) return val;
-        if(north.equals(Compass.SOUTH)) return (val+2)%4;
-        if(north.equals(Compass.EAST)) return (val+1)%4;
-        return (val+3)%4;
-    }
-    
     public void computeChoices(boolean PF,boolean PD,boolean PI, boolean PA, boolean AF, boolean AD, boolean AA, boolean AI, Stack<Integer> stack){
         Compass realNorth=north;
         Stack<Integer> aux = new Stack<>();
         
-        if(!PF){ if(!AF) aux.push(0);}
+        if(!PF){ aux.push(0); }
         else{
             int index = getIndexExploredStates();
             actualNode.exploredStates[index]=true;
         }        
-        if(!PD){ if(!AD) aux.push(1);}
+        if(!PD){ aux.push(1); }
         else{
             int index = getIndexExploredStates();
             index=(index+1)%4;
             actualNode.exploredStates[index]=true;
         }        
-        if(!PI){ if(!AI) aux.push(3);}
+        if(!PI){ aux.push(3); }
         else{
             int index = getIndexExploredStates();
             index=(index+3)%4;
@@ -76,10 +62,10 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
                 int index = getIndexExploredStates();
                 actualNode.exploredStates[index]=true;
             }
-        } else{ 
+        }else{
             int index = getIndexExploredStates();
             index = (index+2)%4;
-            actualNode.exploredStates[index]=true; //Antes era con index = 2
+            actualNode.exploredStates[index]=true;
         }
         
         while(!aux.isEmpty()){
@@ -93,25 +79,30 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
                     myGraph.SearchNode(nextMove().getX(), nextMove().getY()).exploredStates[(index+2)%4]=true;
                     myGraph.SearchNode(nextMove().getX(), nextMove().getY()).calChoices();
                     actualNode.exploredStates[index]=true;
-                    actualNode.calChoices();
-                    //System.out.println("Nodo ("+nextMove().getX()+","+nextMove().getY()+").choices="+myGraph.SearchNode(nextMove().getX(), nextMove().getY()).getChoices());
                 }
             }else{
                 int index = getIndexExploredStates();
-                if(!actualNode.exploredStates[index]){
+                boolean AgentP=false;
+                if(result==0) AgentP=AF;
+                if(result==1) AgentP=AD;
+                if(result==3) AgentP=AI;
+                if(!actualNode.exploredStates[index] && !AgentP ){
                     stack.push(result);
                 }
             }
         }
+        actualNode.calChoices();
         north=realNorth;
     }
 
     public TeseoSimple() {}
+    
     @Override
     public int accion(boolean PF, boolean PD, boolean PA, boolean PI, boolean MT,
             boolean AF, boolean AD, boolean AA, boolean AI) {
+        
         if (MT) return -1;
-        actualNode.setWalls(getWalls(PF,PD,PI,PA));
+        actualNode.setWalls(getWalls(PF,PD,PA,PI));
         if(actualNode.getWalls()==2) this.TwoWallsNodes.add(actualNode);
         Stack<Integer> nextMoves = new Stack<>();
         
@@ -124,12 +115,7 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
             return 5; // Go back to a decision node
         }
         
-        int pop = nextMoves.pop();
-        int index = getIndexExplorationStates2(pop);
-        actualNode.exploredStates[index]=true;
-        actualNode.calChoices();
-        //System.out.println("Nodo ("+actualNode.getX()+","+actualNode.getY()+").choices="+actualNode.getChoices());
-        return pop;
+        return nextMoves.pop();
     }
 
     @Override

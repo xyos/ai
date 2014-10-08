@@ -25,7 +25,6 @@ public class ExpansionTreeSearch {
     private TreeNode actualNode;
     private int limitDepth;
     private boolean idsNoPosibleSolution;
-    private boolean agentAvoided;
     private HashMap<Point,Object> nodes;
     
     public ExpansionTreeSearch(GraphNode root, GraphNode goal){
@@ -163,13 +162,12 @@ public class ExpansionTreeSearch {
         return null;
     }
     
-    public TreeNode Ids(int lim, Point agentPos){
+    public TreeNode Ids(int lim){
         this.idsNoPosibleSolution=false;        
         ArrayList<TreeNode> list = new ArrayList<>();
         for(int i=1;i<=lim;i++){
             System.gc();
             this.idsNoPosibleSolution=true;
-            this.agentAvoided=false;
             initTree();
             this.limitDepth=i;
             Stack<TreeNode> stack = new Stack<>();
@@ -183,17 +181,8 @@ public class ExpansionTreeSearch {
                 sucesorDFS(list);
                 Collections.shuffle(list);
                 for(TreeNode n:list){
-                    if(agentPos!=null){
-                        if(agentPos.x==n.getMyGraphNode().getX() && agentPos.y==n.getMyGraphNode().getY() && !this.agentAvoided){
-                            this.agentAvoided=true;
-                        }else{
-                            stack.push(n);
-                            this.nodes.put(new Point(n.getMyGraphNode().getX(),n.getMyGraphNode().getY()), null);
-                        }
-                    }else{
-                        stack.push(n);
-                        this.nodes.put(new Point(n.getMyGraphNode().getX(),n.getMyGraphNode().getY()), null);
-                    }
+                    stack.push(n);
+                    this.nodes.put(new Point(n.getMyGraphNode().getX(),n.getMyGraphNode().getY()), null);                    
                 }
             }
             if(this.idsNoPosibleSolution) return null;
