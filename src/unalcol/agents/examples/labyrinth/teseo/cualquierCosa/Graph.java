@@ -61,12 +61,6 @@ public class Graph {
         ArrayList<GraphNode> nodeList = new ArrayList<>();
         nodeList.addAll(twoWallsNodes);
         for(GraphNode node:nodeList){
-            /*if(node.getNeighbors().size()==1 && node.getChoices()==0){          //Sirve pare el caso de ciclos
-                System.out.println("Nodo ("+node.getX()+","+node.getY()+") removido por ciclo");
-                node.getNeighbors().get(0).getGNode().removeNeighbor(node);
-                this.removeNode(node);
-                twoWallsNodes.remove(node);
-            }*/
             if(node.getNeighbors().size()==2){
                 //System.out.println("Nodo ("+node.getX()+","+node.getY()+") removido");
                 Edge a = node.getNeighbors().get(0);

@@ -76,7 +76,9 @@ public class GraphNode {
     }
     
     public void addEdge(Edge e){
-        addBestRoute(e);
+        if(!e.getGNode().equals(this)){
+            addBestRoute(e);
+        }        
     }
     
     public void removeEdge(Edge e){
