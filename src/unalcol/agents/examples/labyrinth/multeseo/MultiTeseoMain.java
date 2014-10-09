@@ -10,7 +10,7 @@ import unalcol.agents.examples.labyrinth.Labyrinth;
 import unalcol.agents.examples.labyrinth.LabyrinthDrawer;
 import unalcol.agents.simulate.util.SimpleLanguage;
 import unalcol.types.collection.vector.Vector;
-import unalcol.agents.examples.labyrinth.teseo.cualquierCosa.TeseoSimple;
+import unalcol.agents.examples.labyrinth.multeseo.cualquierCosa.TeseoSimple;
 
 
 public class MultiTeseoMain {
@@ -25,7 +25,7 @@ public class MultiTeseoMain {
      AgentProgram[] teseo = new AgentProgram[12];
      Vector<Agent> agent = new Vector();
      
-     int numberOfAgents=3;
+     int numberOfAgents=11;
      
      for(int i=1; i<=numberOfAgents; i++){
         teseo[i] = new TeseoSimple();

@@ -1,4 +1,4 @@
-package unalcol.agents.examples.labyrinth.teseo.cualquierCosa;
+package unalcol.agents.examples.labyrinth.multeseo.cualquierCosa;
 
 import java.awt.Point;
 import java.util.ArrayList;

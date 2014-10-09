@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package unalcol.agents.examples.labyrinth.teseo.cualquierCosa;
+package unalcol.agents.examples.labyrinth.multeseo.cualquierCosa;
 
 
 /**

@@ -2,7 +2,7 @@ package unalcol.agents.examples.labyrinth.teseo;
 import unalcol.agents.Agent;
 
 import unalcol.agents.examples.labyrinth.*;
-import unalcol.agents.examples.labyrinth.teseo.cualquierCosa.TeseoSimple;
+import unalcol.agents.examples.labyrinth.multeseo.cualquierCosa.TeseoSimple;
 import unalcol.agents.simulate.util.*;
 
 public class TeseoMain {
