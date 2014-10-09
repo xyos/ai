@@ -56,11 +56,11 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
       return myGraph.getNodes().containsKey(new Point(a.getX(),a.getY()));
   }
   
-  public int getIndexExploredStates(){
-      if(north.equals(Compass.NORTH)) return 0;
-      if(north.equals(Compass.SOUTH)) return 2;
-      if(north.equals(Compass.EAST)) return 1;
-      return 3;
+  public int getIndexExploredStates(int val){
+      if(north.equals(Compass.NORTH)) return (0+val)%4;
+      if(north.equals(Compass.EAST)) return (1+val)%4;
+      if(north.equals(Compass.SOUTH)) return (2+val)%4;
+      return (3+val)%4;
   }
 
     public abstract int accion( boolean PF, boolean PD, boolean PA, boolean PI, boolean MT,
@@ -94,6 +94,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         
         if (cmd.size() == 0) {
             //System.out.println("---------------\nPocisión: "+actualNode.getX()+","+actualNode.getY()+"\nBrújula: "+north);
+            //System.out.println("PreviousNode("+previousNode.getX()+","+previousNode.getY()+") ExploredStates[0,1,2,3]=["+previousNode.exploredStates[0]+","+previousNode.exploredStates[1]+","+previousNode.exploredStates[2]+","+previousNode.exploredStates[3]+"]");
             //System.out.println("\nGraph: "); printNodes();
             //System.out.println("---------------");
             //new java.util.Scanner(System.in).nextLine(); //Sirve para ver el proceso paso paso.
@@ -119,6 +120,9 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                                 cmd.add(language.getAction(3)); //rotate
                                 rotate(1);
                             }
+                            int index = getIndexExploredStates(0);
+                            actualNode.exploredStates[index]=true;
+                            actualNode.calChoices();
                             cmd.add(language.getAction(2)); // advance
                             
                         } else {
@@ -144,11 +148,9 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         }
         if(x.equals(language.getAction(2))){
             if(!AF){
-                previousNode=actualNode;
                 if(this.AgentFindOtherWay){
                     actualNode = nextMove();
                     if(knownNode(actualNode)) AgentFindOtherWay=false;
-                    previousNode=actualNode;
                 }else{
                     if(!EdgeStates.isEmpty()){
                         EdgeStates.poll();
@@ -157,23 +159,26 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                             goBackSolution.pop();
                         }else{
 
-                            int index = getIndexExploredStates();
-                            actualNode.exploredStates[index]=true;
-                            actualNode.calChoices();
                             GraphNode newNode = nextMove();
                             actualNode.addNeighbor(newNode, 1);
                             actualNode = newNode;
                             myGraph.addNode(actualNode);
-                            previousNode=actualNode;
                             isNewNode=true;
-                            
                         }
                     }
                 }
-                
+                previousNode=actualNode;
             }else{
-                if(!EdgeStates.isEmpty() || !goBackSolution.isEmpty()){
-                    actualNode=previousNode;
+                if(AgentFindOtherWay){
+                    
+                }else{
+                    if(!EdgeStates.isEmpty() || !goBackSolution.isEmpty()){
+                        actualNode=previousNode;
+                    }else{
+                        int index = getIndexExploredStates(0);
+                        actualNode.exploredStates[index]=false;
+                        actualNode.calChoices();
+                    }
                 }
                 System.out.println("Encontró un Agente cuando iba a avanzar");
                 cmd.remove(0);

@@ -163,7 +163,7 @@ public class ExpansionTreeSearch {
     }
     
     public TreeNode Ids(int lim){
-        this.idsNoPosibleSolution=false;        
+        this.idsNoPosibleSolution=false;
         ArrayList<TreeNode> list = new ArrayList<>();
         for(int i=1;i<=lim;i++){
             System.gc();

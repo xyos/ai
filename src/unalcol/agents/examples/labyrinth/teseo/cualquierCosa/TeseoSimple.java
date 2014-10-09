@@ -35,36 +35,33 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
         
         if(!PF){ aux.push(0); }
         else{
-            int index = getIndexExploredStates();
+            int index = getIndexExploredStates(0);
             actualNode.exploredStates[index]=true;
         }        
         if(!PD){ aux.push(1); }
         else{
-            int index = getIndexExploredStates();
-            index=(index+1)%4;
+            int index = getIndexExploredStates(1);
             actualNode.exploredStates[index]=true;
         }        
         if(!PI){ aux.push(3); }
         else{
-            int index = getIndexExploredStates();
-            index=(index+3)%4;
+            int index = getIndexExploredStates(3);
             actualNode.exploredStates[index]=true;
         }
         
         if(!PA){
             rotate(2);
             if(actualNode.equals(myGraph.getRoot())){
-                int index = getIndexExploredStates();
+                int index = getIndexExploredStates(0);
                 if(!knownNode(nextMove())&&!actualNode.exploredStates[index]){
                     if(!AA) stack.push(2);
                 }
             }else{
-                int index = getIndexExploredStates();
+                int index = getIndexExploredStates(0);
                 actualNode.exploredStates[index]=true;
             }
         }else{
-            int index = getIndexExploredStates();
-            index = (index+2)%4;
+            int index = getIndexExploredStates(2);
             actualNode.exploredStates[index]=true;
         }
         
@@ -74,14 +71,14 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
             rotate(result);
             if(knownNode(nextMove())){
                 if(isNewNode) {
-                    int index = getIndexExploredStates();
+                    int index = getIndexExploredStates(0);
                     myGraph.SearchNode(nextMove().getX(), nextMove().getY()).addNeighbor(actualNode, 1);
                     myGraph.SearchNode(nextMove().getX(), nextMove().getY()).exploredStates[(index+2)%4]=true;
                     myGraph.SearchNode(nextMove().getX(), nextMove().getY()).calChoices();
                     actualNode.exploredStates[index]=true;
                 }
             }else{
-                int index = getIndexExploredStates();
+                int index = getIndexExploredStates(0);
                 boolean AgentP=false;
                 if(result==0) AgentP=AF;
                 if(result==1) AgentP=AD;
@@ -109,7 +106,6 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
         computeChoices(PF, PD, PI, PA, AF, AD, AA, AI, nextMoves);
         
         Collections.shuffle(nextMoves);// Decisión Aleatoria, si se comenta: forward, right, left
-        Collections.shuffle(nextMoves);
         
         if (nextMoves.isEmpty()){
             return 5; // Go back to a decision node
