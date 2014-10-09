@@ -115,8 +115,8 @@ public class TeseoSimple extends SimpleTeseoAgentProgram {
     }
 
     @Override
-    public int findOtherWay(boolean PF, boolean PD, boolean PA, boolean PI, boolean MT, boolean AF, boolean AD, boolean AA, boolean AI) {
-        if(!PF && !AF) return 0;        
+    public int findOtherWay(boolean PF, boolean PD, boolean PA, boolean PI, boolean AF, boolean AD, boolean AA, boolean AI) {
+        if(!PF && !AF) return 0;
         if(!PD && !AD) return 1;        
         if(!PI && !AI) return 3;        
         if(!PA && !AA) return 2;

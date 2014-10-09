@@ -66,7 +66,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
     public abstract int accion( boolean PF, boolean PD, boolean PA, boolean PI, boolean MT,
           boolean AF, boolean AD, boolean AA, boolean AI);
     
-    public abstract int findOtherWay( boolean PF, boolean PD, boolean PA, boolean PI, boolean MT,
+    public abstract int findOtherWay( boolean PF, boolean PD, boolean PA, boolean PI,
           boolean AF, boolean AD, boolean AA, boolean AI);
 
     /**
@@ -100,7 +100,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
             //new java.util.Scanner(System.in).nextLine(); //Sirve para ver el proceso paso paso.
             
             if(AgentFindOtherWay){
-                int a = findOtherWay(PF, PD, PA, PI, MT, AF, AD, AA, AI);
+                int a = findOtherWay(PF, PD, PA, PI, AF, AD, AA, AI);
                 AgentAroundFindOtherWay(a);
             }
             else{
@@ -149,8 +149,13 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         if(x.equals(language.getAction(2))){
             if(!AF){
                 if(this.AgentFindOtherWay){
-                    actualNode = nextMove();
-                    if(knownNode(actualNode)) AgentFindOtherWay=false;
+                    GraphNode auxNode=nextMove();
+                    actualNode=myGraph.SearchNode(auxNode.getX(),auxNode.getY());
+                    if(actualNode==null){
+                        actualNode = auxNode;
+                    }else{
+                        AgentFindOtherWay=false;
+                    }
                 }else{
                     if(!EdgeStates.isEmpty()){
                         EdgeStates.poll();
