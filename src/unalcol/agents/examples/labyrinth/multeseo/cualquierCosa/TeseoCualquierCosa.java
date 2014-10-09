@@ -10,6 +10,7 @@ import java.util.Stack;
 /**
  *
  * @author Alexander
+ * Grupo 8
  */
 public class TeseoCualquierCosa extends SimpleTeseoAgentProgram {
     
