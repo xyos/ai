@@ -25,7 +25,7 @@ public class MultiTeseoMain {
      AgentProgram[] teseo = new AgentProgram[12];
      Vector<Agent> agent = new Vector();
      
-     int numberOfAgents=3;
+     int numberOfAgents=2;
      
      for(int i=1; i<=numberOfAgents; i++){
         teseo[i] = new TeseoCualquierCosa();

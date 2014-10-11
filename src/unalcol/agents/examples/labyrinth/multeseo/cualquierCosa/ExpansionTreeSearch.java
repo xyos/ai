@@ -165,12 +165,13 @@ public class ExpansionTreeSearch {
     public TreeNode Ids(int lim){
         this.idsNoPosibleSolution=false;
         ArrayList<TreeNode> list = new ArrayList<>();
+        Stack<TreeNode> stack = new Stack<>();
         for(int i=1;i<=lim;i++){
             System.gc();
+            stack.clear();
             this.idsNoPosibleSolution=true;
             initTree();
             this.limitDepth=i;
-            Stack<TreeNode> stack = new Stack<>();
             stack.push(tree.getRoot());
             while(!stack.isEmpty()){
                 actualNode = stack.pop();

@@ -37,7 +37,6 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
   protected boolean AgentFindOtherWay=false;
   protected Stack<GraphNode> goBackSolution = new Stack<>(); //Son los nodods que debe visitar para llegar a un nodo de desición anterior
   protected LinkedList<Point> EdgeStates = new LinkedList(); //Son los nodos intermedios que hay entre dos nodos cuando se acorta el grafo
-  protected boolean isNewNode=true;
   protected ArrayList<GraphNode> TwoWallsNodes = new ArrayList<>();
   public long stop; // Para medir el tiempo (Start esta en el constructor de la clase Graph)
   
@@ -93,11 +92,17 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         globalAI=AI;
         
         if (cmd.size() == 0) {
-            //System.out.println("---------------\nPocisión: "+actualNode.getX()+","+actualNode.getY()+"\nBrújula: "+north);
-            //System.out.println("PreviousNode("+previousNode.getX()+","+previousNode.getY()+") ExploredStates[0,1,2,3]=["+previousNode.exploredStates[0]+","+previousNode.exploredStates[1]+","+previousNode.exploredStates[2]+","+previousNode.exploredStates[3]+"]");
-            //System.out.println("\nGraph: "); printNodes();
-            //System.out.println("---------------");
-            //new java.util.Scanner(System.in).nextLine(); //Sirve para ver el proceso paso paso.
+            /*  Borra el doble slash para comentar todo este segmento
+            System.out.println("---------------\nPocisión: "+actualNode.getX()+","+actualNode.getY()+"\nBrújula: "+north);
+            System.out.println("AlreadyExplored: "+actualNode.isAlreadyExplored());
+            System.out.println("ExploredStates[0,1,2,3]=["+actualNode.getExploredNeighboors(0)+","+
+                    actualNode.getExploredNeighboors(1)+","+actualNode.getExploredNeighboors(2)+","+
+                    actualNode.getExploredNeighboors(3)+"]");
+            System.out.println("PreviousNode("+previousNode.getX()+","+previousNode.getY()+")");
+            System.out.println("---------------"); printNodes();
+            System.out.println("---------------");
+            new java.util.Scanner(System.in).nextLine(); //Sirve para ver el proceso paso paso.
+            //*/
             
             if(AgentFindOtherWay){
                 int a = findOtherWay(PF, PD, PA, PI, AF, AD, AA, AI);
@@ -121,8 +126,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                                 rotate(1);
                             }
                             int index = getIndexExploredStates(0);
-                            actualNode.exploredStates[index]=true;
-                            actualNode.calChoices();
+                            actualNode.setExploredNeighboors(index, true);
                             cmd.add(language.getAction(2)); // advance
                             
                         } else {
@@ -163,12 +167,10 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                         if(!goBackSolution.isEmpty()){
                             goBackSolution.pop();
                         }else{
-
                             GraphNode newNode = nextMove();
                             actualNode.addNeighbor(newNode, 1);
                             actualNode = newNode;
                             myGraph.addNode(actualNode);
-                            isNewNode=true;
                         }
                     }
                 }
@@ -181,11 +183,10 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                         actualNode=previousNode;
                     }else{
                         int index = getIndexExploredStates(0);
-                        actualNode.exploredStates[index]=false;
-                        actualNode.calChoices();
+                        actualNode.setExploredNeighboors(index, false);
                     }
                 }
-                System.out.println("Encontró un Agente cuando iba a avanzar");
+                //System.out.println("Encontró un Agente cuando iba a avanzar");
                 cmd.remove(0);
                 return new Action(language.getAction(0));
             }
@@ -220,18 +221,11 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         ExpansionTreeSearch searchTree = new ExpansionTreeSearch(root);
         TreeNode node = searchTree.Ids(100);
         if(node==null){
-            System.out.println("\nLa expansión no encontro ningún nodo");
+            //System.out.println("\nLa expansión no encontro ningún nodo");
             cmd.add(language.getAction(0)); // no-op
             return;
-        }
-        
-        if(actualNode.equals(node.getMyGraphNode())){
-            System.out.println("\nLa busqueda retorno el mismo nodo");
-            cmd.add(language.getAction(0)); // no-op
-            return;
-        }
-        
-        while(node.getParent()!=null){            
+        }        
+        while(node.getParent()!=null){
             goBackSolution.push(node.getMyGraphNode());
             node=node.getParent();
         }
@@ -255,7 +249,6 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
             Point removed = EdgeStates.peek();
             goTo(removed);
         }
-        isNewNode=false;
     }
     
     private void goTo(Point p){
@@ -270,15 +263,15 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         if (dy==-1) rots=rotateTo(Compass.SOUTH);
         
         if(watchForAgents(rots)){
-            System.out.println("Go back solution break; agents around");
+            //System.out.println("Go back solution break; agents around");
             goBackSolution.clear();
             EdgeStates.clear();
             if(!knownNode(actualNode)){
-                System.out.println("AgentFindOtherWay");
+                //System.out.println("AgentFindOtherWay");
                 AgentFindOtherWay=true;
                 cmd.add(language.getAction(0));
             }else{                
-                System.out.println("new goBackToDesicionNode");
+                //System.out.println("new goBackToDesicionNode");
                 cmd.add(language.getAction(0));
             }
         }else{
@@ -357,8 +350,9 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                     System.out.print("}");
                 }
             }
-            System.out.println("\nExploredStates[0,1,2,3]=["+node.exploredStates[0]+","+node.exploredStates[1]+
-                    ","+node.exploredStates[2]+","+node.exploredStates[3]+"]");
+            System.out.println("\nExploredStates[0,1,2,3]=["+node.getExploredNeighboors(0)+","+node.getExploredNeighboors(1)+
+                    ","+node.getExploredNeighboors(2)+","+node.getExploredNeighboors(3)+"]");
+            System.out.println("AlreadyExplored: "+node.isAlreadyExplored());
             System.out.println("Choices: "+node.getChoices());
             System.out.println();
         }

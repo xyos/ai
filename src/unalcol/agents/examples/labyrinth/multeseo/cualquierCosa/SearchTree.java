@@ -13,17 +13,8 @@ package unalcol.agents.examples.labyrinth.multeseo.cualquierCosa;
  */
 public class SearchTree {
     
-    private int nodeNumber;
     private int depth;
-    private TreeNode root;
-
-    public int getNodeNumber() {
-        return nodeNumber;
-    }
-
-    public void setNodeNumber(int nodeNumber) {
-        this.nodeNumber = nodeNumber;
-    }
+    private TreeNode root;    
 
     public int getDepth() {
         return depth;
@@ -42,13 +33,11 @@ public class SearchTree {
     }
     
     public void addNode(TreeNode a){
-        this.nodeNumber = this.nodeNumber + 1;
         if(a.getCostFromRoot()>this.depth) this.depth=a.getCostFromRoot();
     }
     
     public void initTree(){
         this.depth=0;
-        this.nodeNumber=1;
         this.root.clearChildren();
     }
     
@@ -57,7 +46,6 @@ public class SearchTree {
         node.setParent(null);
         node.costFromRoot();
         this.depth=0;
-        this.nodeNumber=1;
         this.root=node;
     }            
 }

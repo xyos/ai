@@ -21,76 +21,108 @@ public class TeseoCualquierCosa extends SimpleTeseoAgentProgram {
         Con -1 muere   
         Con 5 ejecuta la funcion para encontar el nodo de decision mas cercano
     */
-    public int getWalls(boolean PF,boolean PD,boolean PA,boolean PI){
-        int walls=0;
-        if(PF) walls++;
-        if(PD) walls++;
-        if(PA) walls++;
-        if(PI) walls++;
-        return walls;
+    private int calcRotations(Compass dir){
+        int rotations=0;
+        while(north!=dir){
+            rotations++;
+            rotate(1);
+        }
+        return rotations;
     }
     
-    public void computeChoices(boolean PF,boolean PD,boolean PI, boolean PA, boolean AF, boolean AD, boolean AA, boolean AI, Stack<Integer> stack){
+    public Stack<Integer> getChoicesLeft(){
+        Stack<Integer> stack = new Stack<>();
         Compass realNorth=north;
+        for(int i=0; i<=3; i++){
+            if(!actualNode.getExploredNeighboors(i)){
+                int rots;
+                switch (i){
+                    case 0:
+                        rots=calcRotations(Compass.NORTH);
+                        break;
+                    case 1:
+                        rots=calcRotations(Compass.EAST);
+                        break;
+                    case 2:
+                        rots=calcRotations(Compass.SOUTH);
+                        break;
+                    default:
+                        rots=calcRotations(Compass.WEST);
+                        break;
+                }
+                stack.push(rots);
+                north=realNorth;
+            }
+        }
+        return stack;
+    }
+    
+    public Stack<Integer> analyzePerception(boolean PF,boolean PD,boolean PA, boolean PI){
         Stack<Integer> aux = new Stack<>();
+        actualNode.setWalls(0);
         
         if(!PF){ aux.push(0); }
         else{
             int index = getIndexExploredStates(0);
-            actualNode.exploredStates[index]=true;
+            actualNode.setExploredNeighboors(index, true);
+            actualNode.setWalls(actualNode.getWalls()+1);
         }        
         if(!PD){ aux.push(1); }
         else{
             int index = getIndexExploredStates(1);
-            actualNode.exploredStates[index]=true;
+            actualNode.setExploredNeighboors(index, true);            
+            actualNode.setWalls(actualNode.getWalls()+1);
         }        
         if(!PI){ aux.push(3); }
         else{
             int index = getIndexExploredStates(3);
-            actualNode.exploredStates[index]=true;
+            actualNode.setExploredNeighboors(index, true);
+            actualNode.setWalls(actualNode.getWalls()+1);
         }
         
         if(!PA){
-            rotate(2);
+            int index = getIndexExploredStates(2);
             if(actualNode.equals(myGraph.getRoot())){
-                int index = getIndexExploredStates(0);
-                if(!knownNode(nextMove())&&!actualNode.exploredStates[index]){
-                    if(!AA) stack.push(2);
-                }
+                aux.push(2);
             }else{
-                int index = getIndexExploredStates(0);
-                actualNode.exploredStates[index]=true;
+                actualNode.setExploredNeighboors(index, true); //En este caso, quiere decir que avanzó obviamente desde un nodo conocido 
             }
         }else{
             int index = getIndexExploredStates(2);
-            actualNode.exploredStates[index]=true;
+            actualNode.setExploredNeighboors(index, true);
+            actualNode.setWalls(actualNode.getWalls()+1);
         }
-        
+        if(actualNode.getWalls()==2) this.TwoWallsNodes.add(actualNode);
+        actualNode.setAlreadyExplored(true);
+        return aux;
+    }
+    
+    public Stack<Integer> computeChoices(Stack<Integer> aux, boolean AF, boolean AD, boolean AA, boolean AI){        
+        Stack<Integer> stack = new Stack<>();
+        Compass realNorth=north;
         while(!aux.isEmpty()){
             north=realNorth;
             int result = aux.pop();
             rotate(result);
+            int index = getIndexExploredStates(0);
+            if(result==2){
+                if(!AA) stack.push(2);
+                continue;
+            }
             if(knownNode(nextMove())){
-                if(isNewNode) {
-                    int index = getIndexExploredStates(0);
-                    myGraph.SearchNode(nextMove().getX(), nextMove().getY()).addNeighbor(actualNode, 1);
-                    myGraph.SearchNode(nextMove().getX(), nextMove().getY()).exploredStates[(index+2)%4]=true;
-                    myGraph.SearchNode(nextMove().getX(), nextMove().getY()).calChoices();
-                    actualNode.exploredStates[index]=true;
-                }
+                myGraph.SearchNode(nextMove().getX(), nextMove().getY()).addNeighbor(actualNode, 1);
+                myGraph.SearchNode(nextMove().getX(), nextMove().getY()).setExploredNeighboors((index+2)%4, true);
+                actualNode.setExploredNeighboors(index, true);
             }else{
-                int index = getIndexExploredStates(0);
                 boolean AgentP=false;
                 if(result==0) AgentP=AF;
                 if(result==1) AgentP=AD;
                 if(result==3) AgentP=AI;
-                if(!actualNode.exploredStates[index] && !AgentP ){
-                    stack.push(result);
-                }
+                if(!actualNode.getExploredNeighboors(index) && !AgentP) stack.push(result);
             }
         }
-        actualNode.calChoices();
         north=realNorth;
+        return stack;
     }
 
     public TeseoCualquierCosa() {}
@@ -100,12 +132,15 @@ public class TeseoCualquierCosa extends SimpleTeseoAgentProgram {
             boolean AF, boolean AD, boolean AA, boolean AI) {
         
         if (MT) return -1;
-        actualNode.setWalls(getWalls(PF,PD,PA,PI));
-        if(actualNode.getWalls()==2) this.TwoWallsNodes.add(actualNode);
-        Stack<Integer> nextMoves = new Stack<>();
         
-        computeChoices(PF, PD, PI, PA, AF, AD, AA, AI, nextMoves);
+        Stack<Integer> posibleMoves;
+        if(!actualNode.isAlreadyExplored()){
+            posibleMoves=analyzePerception(PF, PD, PA, PI);
+        }else{
+            posibleMoves=getChoicesLeft();
+        }
         
+        Stack<Integer> nextMoves = computeChoices(posibleMoves, AF, AD, AA, AI);        
         Collections.shuffle(nextMoves);// Decisión Aleatoria, si se comenta: forward, right, left
         
         if (nextMoves.isEmpty()){
@@ -122,6 +157,5 @@ public class TeseoCualquierCosa extends SimpleTeseoAgentProgram {
         if(!PI && !AI) return 3;        
         if(!PA && !AA) return 2;
         return 5;
-    }
-    
+    }    
 }
