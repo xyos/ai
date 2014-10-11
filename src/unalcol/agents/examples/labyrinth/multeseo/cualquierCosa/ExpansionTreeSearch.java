@@ -26,20 +26,14 @@ public class ExpansionTreeSearch {
     private int limitDepth;
     private boolean idsNoPosibleSolution;
     private HashMap<Point,Object> nodes;
+    private ArrayList<Point> otherAgents;
     
-    public ExpansionTreeSearch(GraphNode root, GraphNode goal){
-        this.root=root;
-        this.tree = new SearchTree(root);
-        this.goal=goal;
-        this.nodes= new HashMap<>(130);
-        this.nodes.put(new Point(root.getX(),root.getY()), null);
-    }
-    
-    public ExpansionTreeSearch(GraphNode root){
+    public ExpansionTreeSearch(GraphNode root, ArrayList<Point> otherAgents){
         this.root=root;
         this.tree = new SearchTree(root);
         this.nodes= new HashMap<>(130);
-        this.nodes.put(new Point(root.getX(),root.getY()), null);
+        this.otherAgents=otherAgents;
+        this.nodes.put(new Point(root.getX(),root.getY()), null);        
     }
     
     public final void initTree(){
@@ -76,11 +70,11 @@ public class ExpansionTreeSearch {
         return actualNode.equals(tree.getRoot());
     }
     
-    public boolean isPreviousState1(GraphNode a){ 
+    public boolean isPreviousState(GraphNode a){ 
         return (a.getX()==actualNode.getParent().getMyGraphNode().getX() && a.getY()==actualNode.getParent().getMyGraphNode().getY());
     }
     
-    private boolean isPreviousState2(GraphNode node){ // Determina si uno nodo ya fue añadido a la exploracion para no volver a pasar por el (evita ciclos)
+    private boolean isInTheSolution(GraphNode node){ // Determina si uno nodo ya fue añadido a la exploracion para no volver a pasar por el (evita ciclos)
         return this.nodes.containsKey(new Point (node.getX(),node.getY()));
     }
     
@@ -105,7 +99,7 @@ public class ExpansionTreeSearch {
         boolean isRoot = isRoot();
         
         for(Edge e :actualNode.getMyGraphNode().getNeighbors()){
-            if(isRoot|| !isPreviousState1(e.getGNode())){
+            if(isRoot|| !isPreviousState(e.getGNode())){
                 TreeNode node = new TreeNode(e.getGNode());
                 node.setParent(actualNode);
                 actualNode.addChild(node, e.getEdgeCost());
@@ -128,7 +122,7 @@ public class ExpansionTreeSearch {
     public void sucesorDFS(ArrayList<TreeNode> list){
         
         for(Edge e :actualNode.getMyGraphNode().getNeighbors()){
-            if( isRoot() || (!isPreviousState2(e.getGNode()) && e.getGNode().getWalls()!=3 ) ){
+            if( isRoot() || (!isInTheSolution(e.getGNode()) && e.getGNode().getWalls()!=3 ) ){
                 TreeNode node = new TreeNode(e.getGNode());
                 node.setParent(actualNode);
                 actualNode.addChild(node, e.getEdgeCost());
@@ -163,6 +157,7 @@ public class ExpansionTreeSearch {
     }
     
     public TreeNode Ids(int lim){
+        ArrayList<Point> agentsLocations= new ArrayList<>();
         this.idsNoPosibleSolution=false;
         ArrayList<TreeNode> list = new ArrayList<>();
         Stack<TreeNode> stack = new Stack<>();
@@ -171,6 +166,7 @@ public class ExpansionTreeSearch {
             stack.clear();
             this.idsNoPosibleSolution=true;
             initTree();
+            agentsLocations.addAll(this.otherAgents);
             this.limitDepth=i;
             stack.push(tree.getRoot());
             while(!stack.isEmpty()){
@@ -182,12 +178,25 @@ public class ExpansionTreeSearch {
                 sucesorDFS(list);
                 Collections.shuffle(list);
                 for(TreeNode n:list){
-                    stack.push(n);
-                    this.nodes.put(new Point(n.getMyGraphNode().getX(),n.getMyGraphNode().getY()), null);                    
+                    boolean avoidAgent=false;
+                    for(Point p:agentsLocations){
+                        if(p.x==n.getMyGraphNode().getX()&&p.y==n.getMyGraphNode().getY()){
+                            avoidAgent=true;
+                            break;
+                        }
+                    }
+                    if(!avoidAgent){
+                        stack.push(n);
+                        this.nodes.put(new Point(n.getMyGraphNode().getX(),n.getMyGraphNode().getY()), null);
+                    }
                 }
+                agentsLocations.clear();
             }
-            if(this.idsNoPosibleSolution) return null;
-        }return null;
+            if(this.idsNoPosibleSolution){
+                return null;
+            }
+        }
+        return null;
     }
     
 }
