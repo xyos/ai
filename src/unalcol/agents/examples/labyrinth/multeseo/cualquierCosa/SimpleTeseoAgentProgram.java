@@ -35,6 +35,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
   private Boolean globalAA;
   private Boolean globalAI;
   protected boolean AgentFindOtherWay=false;
+  protected GraphNode AgentInThatWay=null;
   protected Stack<GraphNode> goBackSolution = new Stack<>(); //Son los nodods que debe visitar para llegar a un nodo de desición anterior
   protected LinkedList<Point> EdgeStates = new LinkedList(); //Son los nodos intermedios que hay entre dos nodos cuando se acorta el grafo
   protected ArrayList<GraphNode> TwoWallsNodes = new ArrayList<>();
@@ -134,7 +135,14 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                         } else {
                             if (d == 5) {
                                 myGraph.reduceGraph(this.TwoWallsNodes);
-                                goBackDecisionNode(actualNode, agentsPositions());
+                                if(AgentInThatWay!=null){
+                                    ArrayList<Point> list = agentsPositions();
+                                    list.add(findNeighbor(AgentInThatWay));
+                                    goBackDecisionNode(actualNode, list); 
+                                    AgentInThatWay=null;
+                                }else{
+                                    goBackDecisionNode(actualNode, agentsPositions());
+                                }
                             }
                             if (d == -1) {
                                 cmd.add(language.getAction(1)); // die
@@ -161,6 +169,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                         actualNode = auxNode;
                     }else{
                         AgentFindOtherWay=false;
+                        AgentInThatWay= previousNode;
                     }
                 }else{
                     if(!EdgeStates.isEmpty()){
@@ -365,6 +374,18 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                   break;
         }
         return a;      
+    }
+    
+    protected Point findNeighbor(GraphNode state){  //Encuentra el el vecino donde posiblemente hay un agente, que viene del procedimiento AgentFindOtherWay
+        for(Edge neighbor:actualNode.getNeighbors()){
+            if(!neighbor.getStates().isEmpty()){
+                Point auxState = neighbor.getStates().get(0);
+                if(auxState.x==state.getX()&&auxState.y==state.getY()){
+                    return new Point(neighbor.getGNode().getX(), neighbor.getGNode().getY());
+                }
+            }
+        }
+        return null;        
     }
     
     public void printNodes(){
