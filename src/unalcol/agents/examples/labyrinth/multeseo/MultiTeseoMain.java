@@ -27,7 +27,7 @@ public class MultiTeseoMain {
      
      int numberOfAgents=2;
      
-     for(int i=1; i<=numberOfAgents; i++){
+     for(int i=0; i<numberOfAgents; i++){
         teseo[i] = new TeseoCualquierCosa();
         ((TeseoCualquierCosa)teseo[i]).setLanguage(getLanguage());
         agent.add(new Agent(teseo[i]));
