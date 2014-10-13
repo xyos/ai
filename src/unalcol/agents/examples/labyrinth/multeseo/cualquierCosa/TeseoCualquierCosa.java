@@ -97,16 +97,16 @@ public class TeseoCualquierCosa extends SimpleTeseoAgentProgram {
         return aux;
     }
     
-    public Stack<Integer> computeChoices(Stack<Integer> aux, boolean AF, boolean AD, boolean AA, boolean AI){        
-        Stack<Integer> stack = new Stack<>();
+    public Stack<Integer> computeChoices(Stack<Integer> choices, boolean AF, boolean AD, boolean AA, boolean AI){        
+        Stack<Integer> moves = new Stack<>();
         Compass realNorth=north;
-        while(!aux.isEmpty()){
+        while(!choices.isEmpty()){
             north=realNorth;
-            int result = aux.pop();
+            int result = choices.pop();
             rotate(result);
             int index = getIndexExploredStates(0);
             if(result==2){
-                if(!AA) stack.push(2);
+                if(!AA) moves.push(2);
                 continue;
             }
             if(knownNode(nextMove())){
@@ -118,11 +118,11 @@ public class TeseoCualquierCosa extends SimpleTeseoAgentProgram {
                 if(result==0) AgentP=AF;
                 if(result==1) AgentP=AD;
                 if(result==3) AgentP=AI;
-                if(!actualNode.getExploredNeighboors(index) && !AgentP) stack.push(result);
+                if(!AgentP) moves.push(result);
             }
         }
         north=realNorth;
-        return stack;
+        return moves;
     }
 
     public TeseoCualquierCosa() {}
@@ -134,6 +134,7 @@ public class TeseoCualquierCosa extends SimpleTeseoAgentProgram {
         if (MT) return -1;
         
         Stack<Integer> posibleMoves;
+        
         if(!actualNode.isAlreadyExplored()){
             posibleMoves=analyzePerception(PF, PD, PA, PI);
         }else{

@@ -158,7 +158,6 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
             this.stop = System.currentTimeMillis();
             System.out.println("| Número de nodos: " + myGraph.getNodes().size() + " | Tiempo: " + (this.stop - this.myGraph.start) / 1000 + " segundos |");
             System.out.println("---------------------------------------------");
-            //printNodes();
         }
         if(x.equals(language.getAction(2))){
             if(!AF){
@@ -385,7 +384,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                 }
             }
         }
-        return null;        
+        return null;
     }
     
     public void printNodes(){
