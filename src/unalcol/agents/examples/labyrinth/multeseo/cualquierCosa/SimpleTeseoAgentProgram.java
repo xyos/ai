@@ -121,7 +121,6 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                     else{
                         
                         myGraph.reduceGraph(this.TwoWallsNodes);
-                        
                         int d = accion(PF, PD, PA, PI, MT, AF, AD, AA, AI);
                         if (0 <= d && d < 4) {
                             for (int i = 1; i <= d; i++) {
@@ -137,9 +136,10 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                                 myGraph.reduceGraph(this.TwoWallsNodes);
                                 if(AgentInThatWay!=null){
                                     ArrayList<Point> list = agentsPositions();
-                                    list.add(findNeighbor(AgentInThatWay));
-                                    goBackDecisionNode(actualNode, list); 
+                                    Point newPoint = findNeighbor(AgentInThatWay);
                                     AgentInThatWay=null;
+                                    if(newPoint!=null) list.add(newPoint);
+                                    goBackDecisionNode(actualNode, list);
                                 }else{
                                     goBackDecisionNode(actualNode, agentsPositions());
                                 }
@@ -321,6 +321,25 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         }
     }
     
+    protected GraphNode nextMove(){ //Crea un nuevo nodo con la pocisión x,y siguiente hacia donde apunta el Compass(Brújula)
+        GraphNode a = new GraphNode(actualNode.getX(), actualNode.getY());
+        switch(north){
+              case NORTH:
+                  a.setY(a.getY()+1);
+                  break;
+              case SOUTH:
+                  a.setY(a.getY()-1);
+                  break;
+              case WEST:
+                  a.setX(a.getX()-1);
+                  break;
+              case EAST:
+                  a.setX(a.getX()+1);
+                  break;
+        }
+        return a;      
+    }
+    
     protected boolean watchForAgents(int rots){
         if(rots==0 && globalAF) return true;        
         if(rots==1 && globalAD) return true;
@@ -355,25 +374,6 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
             north=actualNorth;
         }
         return points;
-    }
-
-    protected GraphNode nextMove(){ //Crea un nuevo nodo con la pocisión x,y siguiente hacia donde apunta el Compass(Brújula)
-        GraphNode a = new GraphNode(actualNode.getX(), actualNode.getY());
-        switch(north){
-              case NORTH:
-                  a.setY(a.getY()+1);
-                  break;
-              case SOUTH:
-                  a.setY(a.getY()-1);
-                  break;
-              case WEST:
-                  a.setX(a.getX()-1);
-                  break;
-              case EAST:
-                  a.setX(a.getX()+1);
-                  break;
-        }
-        return a;      
     }
     
     protected Point findNeighbor(GraphNode state){  //Encuentra el el vecino donde posiblemente hay un agente, que viene del procedimiento AgentFindOtherWay
