@@ -19,7 +19,7 @@ public class GraphNode {
     private int y;
     private int choices;
     private int walls;
-    private boolean [] exploredNeighboors;
+    private final boolean [] exploredNeighboors;
     private boolean alreadyExplored;
 
     public boolean getExploredNeighboors(int i) {
@@ -92,7 +92,7 @@ public class GraphNode {
     public void addEdge(Edge e){
         if(!e.getGNode().equals(this)){
             addBestRoute(e);
-        }        
+        }
     }
     
     public void removeEdge(Edge e){
@@ -123,7 +123,8 @@ public class GraphNode {
                     return;
                 }
             }
-        }this.neighbors.add(edge);
+        }
+        this.neighbors.add(edge);
     }
     
     public GraphNode(int x, int y){
@@ -138,18 +139,5 @@ public class GraphNode {
         this.exploredNeighboors[2]=false;
         this.exploredNeighboors[3]=false;
     }
-       
-    public GraphNode(int x, int y, ArrayList<Edge> children, int choices){
-        this.x=x;
-        this.y=y;
-        this.neighbors=children;
-        this.choices=choices;
-        this.walls=0;
-        this.alreadyExplored=false;
-        this.exploredNeighboors = new boolean[4];
-        this.exploredNeighboors[0]=false;
-        this.exploredNeighboors[1]=false;
-        this.exploredNeighboors[2]=false;
-        this.exploredNeighboors[3]=false;
-    }
+    
 }

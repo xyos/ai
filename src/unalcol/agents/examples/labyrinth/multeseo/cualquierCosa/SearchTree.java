@@ -6,6 +6,9 @@
 
 package unalcol.agents.examples.labyrinth.multeseo.cualquierCosa;
 
+import java.awt.Point;
+import java.util.HashMap;
+
 
 /**
  *
@@ -14,7 +17,8 @@ package unalcol.agents.examples.labyrinth.multeseo.cualquierCosa;
 public class SearchTree {
     
     private int depth;
-    private TreeNode root;    
+    private TreeNode root;
+    private final HashMap<Point,Object> nodeMap;
 
     public int getDepth() {
         return depth;
@@ -32,20 +36,29 @@ public class SearchTree {
         this.root = root;
     }
     
+    public boolean isKwownNode(GraphNode node){
+        return this.nodeMap.containsKey(new Point(node.getX(), node.getY()));
+    }
+    
     public void addNode(TreeNode a){
         if(a.getCostFromRoot()>this.depth) this.depth=a.getCostFromRoot();
+        this.nodeMap.put(new Point(a.getMyGraphNode().getX(), a.getMyGraphNode().getY()), null);
     }
     
     public void initTree(){
         this.depth=0;
         this.root.clearChildren();
+        this.nodeMap.clear();
+        nodeMap.put(new Point(root.getMyGraphNode().getX(), root.getMyGraphNode().getY()), null);
     }
     
     public SearchTree(GraphNode g){
         TreeNode node = new TreeNode(g);
         node.setParent(null);
-        node.costFromRoot();
+        node.calcCostFromRoot();
         this.depth=0;
         this.root=node;
+        this.nodeMap= new HashMap<>(150);
+        nodeMap.put(new Point(root.getMyGraphNode().getX(), root.getMyGraphNode().getY()), null);
     }            
 }

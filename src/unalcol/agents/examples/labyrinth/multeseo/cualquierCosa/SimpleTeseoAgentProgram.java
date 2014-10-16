@@ -24,7 +24,7 @@ import unalcol.agents.Action;
  */
 public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
   protected SimpleLanguage language;
-  protected Vector<String> cmd = new Vector<String>();
+  protected Vector<String> cmd = new Vector<>();
   protected Graph myGraph = new Graph();
   protected GraphNode actualNode = myGraph.getRoot(); //La pocisión actual en el grafo
   protected GraphNode previousNode = myGraph.getRoot(); //La pocisión inmediatamente anterior a actualNode
@@ -91,7 +91,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         globalAI=AI;
         
         if (cmd.size() == 0) {
-            /*  Borra el doble slash para comentar todo este segmento
+            /*  Borra el doble slash para comentar todo este segmento ó añade un doble slash para comentarlo
             System.out.println("---------------\nPocisión: "+actualNode.getX()+","+actualNode.getY()+"\nBrújula: "+north);
             System.out.println("AlreadyExplored: "+actualNode.isAlreadyExplored());
             System.out.println("ExploredStates[0,1,2,3]=["+actualNode.getExploredNeighboors(0)+","+
@@ -154,10 +154,11 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         }
         String x = cmd.get(0);
         if (x.equals(language.getAction(1))) {
-            System.out.println("\nEl agente ha muerto\n---------------------------------------------");
             this.stop = System.currentTimeMillis();
-            System.out.println("| Número de nodos: " + myGraph.getNodes().size() + " | Tiempo: " + (this.stop - this.myGraph.start) / 1000 + " segundos |");
-            System.out.println("---------------------------------------------");
+            System.out.println("\nEl agente ha muerto\n----------------------------------------------");
+            System.out.println("| Número de nodos: " + myGraph.getNodes().size() + " | Tiempo: " + 
+                    (this.stop - this.myGraph.start) / 1000 + " segundos |");
+            System.out.println("----------------------------------------------");
         }
         if(x.equals(language.getAction(2))){
             if(!AF){
@@ -196,7 +197,6 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                         actualNode.setExploredNeighboors(index, false);
                     }
                 }
-                //System.out.println("Encontró un Agente cuando iba a avanzar");
                 cmd.remove(0);
                 return new Action(language.getAction(0));
             }
@@ -273,15 +273,12 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         if (dy==-1) rots=rotateTo(Compass.SOUTH);
         
         if(watchForAgents(rots)){
-            //System.out.println("Go back solution break; agents around");
             goBackSolution.clear();
             EdgeStates.clear();
             if(!knownNode(actualNode)){
-                //System.out.println("AgentFindOtherWay");
                 AgentFindOtherWay=true;
                 cmd.add(language.getAction(0));
-            }else{                
-                //System.out.println("new goBackToDesicionNode");
+            }else{
                 cmd.add(language.getAction(0));
             }
         }else{

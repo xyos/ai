@@ -22,7 +22,7 @@ public class Graph {
     public long start;
     
     public Graph(){
-        this.nodes= new HashMap<>(130);
+        this.nodes= new HashMap<>(200);
         GraphNode a = new GraphNode(0,0);
         this.nodes.put(new Point(0,0), a);
         this.root=a;
@@ -50,8 +50,9 @@ public class Graph {
             if(node.getNeighbors().size()==2){
                 Edge a = node.getNeighbors().get(0);
                 Edge b = node.getNeighbors().get(1);
+                int edgeCost = a.getStates().size()+b.getStates().size()+2;
 
-                Edge ab = new Edge(b.getGNode(),(a.getStates().size()+b.getStates().size()+2));
+                Edge ab = new Edge(b.getGNode(),edgeCost);
                 ArrayList<Point> ABStates = new ArrayList<>();
                 if(!a.getStates().isEmpty()){
                     ABStates.addAll(a.getStates());
@@ -63,12 +64,10 @@ public class Graph {
                 }
                 ab.setStates(ABStates);
 
-                Edge ba = new Edge(a.getGNode(),(a.getStates().size()+b.getStates().size()+2));
+                Edge ba = new Edge(a.getGNode(),edgeCost);
                 ArrayList<Point> BAStates = new ArrayList<>();
                 BAStates.addAll(ABStates);
-                if(BAStates.size()>1){
-                    Collections.reverse(BAStates);
-                }
+                Collections.reverse(BAStates);
                 ba.setStates(BAStates);
 
                 a.getGNode().addEdge(ab);

@@ -69,7 +69,7 @@ public class TreeNode{
         }
     }
     
-    public void costFromRoot(){
+    public void calcCostFromRoot(){
         int cost=0;
         if(this.parent==null) {
             this.setCostFromRoot(0);
