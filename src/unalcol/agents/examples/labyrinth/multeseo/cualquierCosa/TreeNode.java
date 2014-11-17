@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package unalcol.agents.examples.labyrinth.teseo.cualquierCosa;
+package unalcol.agents.examples.labyrinth.multeseo.cualquierCosa;
 
 
 import java.util.ArrayList;
@@ -15,7 +15,6 @@ import java.util.ArrayList;
  */
 public class TreeNode{
     
-    private int id;
     private ArrayList<Edge> children;
     private TreeNode parent;
     private int costFromRoot;
@@ -23,6 +22,10 @@ public class TreeNode{
 
     public GraphNode getMyGraphNode() {
         return myGraphNode;
+    }
+    
+    public void clearChildren(){
+        this.children.clear();
     }
 
     public void setMyGraphNode(GraphNode myGraphNode) {
@@ -53,14 +56,6 @@ public class TreeNode{
         this.children = children;
     }
     
-    public void setId(int id){
-        this.id=id;
-    }    
-
-    public int getId() {
-        return id;
-    }
-    
     public void addChild(TreeNode a, int cost){
         children.add(new Edge(a, cost));
     }
@@ -74,26 +69,28 @@ public class TreeNode{
         }
     }
     
-    public void costFromRoot(){
+    public void calcCostFromRoot(){
         int cost=0;
         if(this.parent==null) {
             this.setCostFromRoot(0);
         }else{
             for(Edge e:this.parent.children){
-                if(e.getTNode().equals(this)) cost=e.getEdgeCost();
+                if(e.getTNode().equals(this)){
+                    cost=e.getEdgeCost();
+                    break;
+                }
             }
             this.costFromRoot = this.parent.costFromRoot + cost;
         }
     }
-    public TreeNode(int id, GraphNode g){
+    
+    public TreeNode(GraphNode g){
         this.myGraphNode=g;
-        this.id=id;
         this.children = new ArrayList();
     }
     
-    public TreeNode(int id, TreeNode parent, GraphNode g){
+    public TreeNode(TreeNode parent, GraphNode g){
         this.myGraphNode=g;
-        this.id=id;
         this.children = new ArrayList();
         this.parent=parent;
     }

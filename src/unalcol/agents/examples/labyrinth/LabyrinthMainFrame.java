@@ -1,14 +1,12 @@
 package unalcol.agents.examples.labyrinth;
 
 import unalcol.agents.*;
-import unalcol.agents.examples.labyrinth.*;
 import unalcol.agents.simulate.util.*;
 import unalcol.agents.simulate.gui.*;
 import unalcol.reflect.loader.*;
 import java.awt.*;
 import java.awt.event.*;
 import javax.swing.*;
-import java.lang.reflect.*;
 import java.io.*;
 
 /**
@@ -195,7 +193,7 @@ public class LabyrinthMainFrame extends JFrame {
       public void actionPerformed(ActionEvent e){
           jButtonMapa_actionPerformed(e);
       }
-    });        
+    });
     jPanel2.add(drawArea,  BorderLayout.CENTER);
     this.getContentPane().add(jPanel2,  BorderLayout.CENTER);
     this.getContentPane().add(jPanel1,  BorderLayout.SOUTH);
@@ -237,10 +235,10 @@ public class LabyrinthMainFrame extends JFrame {
   
   protected void jButtonMapa_actionPerformed(ActionEvent e) {
     String basePath = new File("").getAbsolutePath();
-    System.out.println(basePath);
-      fileDir = basePath + "/teseo_test/eater-1.txt";
-      fileName = basePath + "/teseo_test/eater-1.txt";
-      loadFile();
+    //System.out.println(basePath);
+    fileDir = basePath + "/teseo_test/eater-1.txt";
+    fileName = basePath + "/teseo_test/eater-1.txt";
+    loadFile();
   }
 
   protected void iterButton_actionPerformed(ActionEvent e) {

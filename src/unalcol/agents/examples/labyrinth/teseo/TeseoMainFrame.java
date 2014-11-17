@@ -9,7 +9,6 @@ import javax.swing.*;
 import unalcol.agents.examples.labyrinth.*;
 import unalcol.agents.examples.labyrinth.teseo.simple.*;
 import unalcol.agents.simulate.util.*;
-import java.io.PrintStream;
 import unalcol.gui.log.LogOutputStream;
 
 /**

@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package unalcol.agents.examples.labyrinth.teseo.cualquierCosa;
+package unalcol.agents.examples.labyrinth.multeseo.cualquierCosa;
 
 
 import java.util.ArrayList;
@@ -19,7 +19,24 @@ public class GraphNode {
     private int y;
     private int choices;
     private int walls;
-    public boolean [] exploredStates;
+    private final boolean [] exploredNeighboors;
+    private boolean alreadyExplored;
+
+    public boolean getExploredNeighboors(int i) {
+        return exploredNeighboors[i];
+    }
+
+    public void setExploredNeighboors(int i, boolean val) {
+        this.exploredNeighboors[i]=val;
+    }
+
+    public boolean isAlreadyExplored() {
+        return alreadyExplored;
+    }
+
+    public void setAlreadyExplored(boolean alreadyExplored) {
+        this.alreadyExplored = alreadyExplored;
+    }
     
     public int getWalls() {
         return walls;
@@ -30,11 +47,8 @@ public class GraphNode {
     }
 
     public int getChoices() {
+        this.calChoices();
         return choices;
-    }
-
-    public void setChoices(int choices) {
-        this.choices = choices;
     }
 
     public int getX() {
@@ -63,10 +77,10 @@ public class GraphNode {
     
     public void calChoices(){
         int val=0;
-        if(!this.exploredStates[0]) val++;
-        if(!this.exploredStates[1]) val++;
-        if(!this.exploredStates[2]) val++;
-        if(!this.exploredStates[3]) val++;
+        if(!this.exploredNeighboors[0]) val++;
+        if(!this.exploredNeighboors[1]) val++;
+        if(!this.exploredNeighboors[2]) val++;
+        if(!this.exploredNeighboors[3]) val++;
         this.choices=val;
     }
     
@@ -76,7 +90,9 @@ public class GraphNode {
     }
     
     public void addEdge(Edge e){
-        addBestRoute(e);
+        if(!e.getGNode().equals(this)){
+            addBestRoute(e);
+        }
     }
     
     public void removeEdge(Edge e){
@@ -107,7 +123,8 @@ public class GraphNode {
                     return;
                 }
             }
-        }this.neighbors.add(edge);
+        }
+        this.neighbors.add(edge);
     }
     
     public GraphNode(int x, int y){
@@ -115,23 +132,12 @@ public class GraphNode {
         this.x=x;
         this.y=y;
         this.walls=0;
-        this.exploredStates= new boolean[4];
-        this.exploredStates[0]=false;
-        this.exploredStates[1]=false;
-        this.exploredStates[2]=false;
-        this.exploredStates[3]=false;
+        this.alreadyExplored=false;
+        this.exploredNeighboors= new boolean[4];
+        this.exploredNeighboors[0]=false;
+        this.exploredNeighboors[1]=false;
+        this.exploredNeighboors[2]=false;
+        this.exploredNeighboors[3]=false;
     }
-       
-    public GraphNode(int x, int y, ArrayList<Edge> children, int choices){
-        this.x=x;
-        this.y=y;
-        this.neighbors=children;
-        this.choices=choices;
-        this.walls=0;
-        this.exploredStates = new boolean[4];
-        this.exploredStates[0]=false;
-        this.exploredStates[1]=false;
-        this.exploredStates[2]=false;
-        this.exploredStates[3]=false;
-    }
+    
 }
