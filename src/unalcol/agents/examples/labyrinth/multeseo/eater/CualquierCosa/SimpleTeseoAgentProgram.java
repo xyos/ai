@@ -1,4 +1,4 @@
-package unalcol.agents.examples.labyrinth.multeseo.cualquierCosa;
+package unalcol.agents.examples.labyrinth.multeseo.eater.CualquierCosa;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -30,10 +30,10 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
   protected GraphNode previousNode = myGraph.getRoot(); //La pocisión inmediatamente anterior a actualNode
   public enum Compass {NORTH, EAST, SOUTH, WEST}
   protected Compass north = Compass.NORTH;
-  private Boolean globalAF;
-  private Boolean globalAD;
-  private Boolean globalAA;
-  private Boolean globalAI;
+  private Boolean AF;
+  private Boolean AD;
+  private Boolean AA;
+  private Boolean AI;
   protected boolean AgentFindOtherWay=false;
   protected GraphNode AgentInThatWay=null;
   protected Stack<GraphNode> goBackSolution = new Stack<>(); //Son los nodods que debe visitar para llegar a un nodo de desición anterior
@@ -64,7 +64,8 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
   }
 
     public abstract int accion( boolean PF, boolean PD, boolean PA, boolean PI, boolean MT,
-          boolean AF, boolean AD, boolean AA, boolean AI);
+          boolean AF, boolean AD, boolean AA, boolean AI, boolean RS, boolean RColor, 
+          boolean RShape, boolean RSize, boolean RWeight, int EL);
     
     public abstract int findOtherWay( boolean PF, boolean PD, boolean PA, boolean PI,
           boolean AF, boolean AD, boolean AA, boolean AI);
@@ -81,17 +82,28 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         boolean PA = (Boolean) p.getAttribute(language.getPercept(2));
         boolean PI = (Boolean) p.getAttribute(language.getPercept(3));
         boolean MT = (Boolean) p.getAttribute(language.getPercept(4));
-        boolean AF = (Boolean) p.getAttribute(language.getPercept(5));
-        boolean AD = (Boolean) p.getAttribute(language.getPercept(6));
-        boolean AA = (Boolean) p.getAttribute(language.getPercept(7));
-        boolean AI = (Boolean) p.getAttribute(language.getPercept(8));
-        globalAF=AF;
-        globalAD=AD;
-        globalAA=AA;
-        globalAI=AI;
+        boolean RS = (Boolean) p.getAttribute(language.getPercept(5)); //Resource
+        boolean RColor = false; //Resource Color
+        boolean RShape = false; //Resource shape
+        boolean RSize = false; //Resource Size
+        boolean RWeight = false; //Resource Weight
+        int EL = (int) p.getAttribute(language.getPercept(10)); //Resource      
+        
+        if(RS){
+            RColor = (boolean) p.getAttribute(language.getPercept(6));
+            RShape = (boolean) p.getAttribute(language.getPercept(7));
+            RSize = (boolean) p.getAttribute(language.getPercept(8));
+            RWeight = (boolean) p.getAttribute(language.getPercept(9));
+        }
+        
+        AF=false;
+        AD=false;
+        AA=false;
+        AI=false;
         
         if (cmd.size() == 0) {
-            /*  Borra el doble slash para comentar todo este segmento ó añade un doble slash para comentarlo
+            new java.util.Scanner(System.in).nextLine();
+             /*  Borra el doble slash para comentar todo este segmento ó añade un doble slash para comentarlo
             System.out.println("---------------\nPocisión: "+actualNode.getX()+","+actualNode.getY()+"\nBrújula: "+north);
             System.out.println("AlreadyExplored: "+actualNode.isAlreadyExplored());
             System.out.println("ExploredStates[0,1,2,3]=["+actualNode.getExploredNeighboors(0)+","+
@@ -121,8 +133,9 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                     else{
                         
                         myGraph.reduceGraph(this.TwoWallsNodes);
-                        int d = accion(PF, PD, PA, PI, MT, AF, AD, AA, AI);
+                        int d = accion(PF, PD, PA, PI, MT, AF, AD, AA, AI , RS, RColor, RShape, RSize, RWeight, EL);
                         if (0 <= d && d < 4) {
+                            if(RS) cmd.add(language.getAction(4));
                             for (int i = 1; i <= d; i++) {
                                 cmd.add(language.getAction(3)); //rotate
                                 rotate(1);
@@ -337,33 +350,33 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
     }
     
     protected boolean watchForAgents(int rots){
-        if(rots==0 && globalAF) return true;        
-        if(rots==1 && globalAD) return true;
-        if(rots==2 && globalAA) return true;
-        if(rots==3 && globalAI) return true;
+        if(rots==0 && AF) return true;        
+        if(rots==1 && AD) return true;
+        if(rots==2 && AA) return true;
+        if(rots==3 && AI) return true;
         return false;
     }
     
     protected ArrayList<Point> agentsPositions(){ //devuelve la lista de las posiciones donde se perciben otros agentes.
         Compass actualNorth =north;
         ArrayList<Point> points = new ArrayList<>(); 
-        if(globalAF){
+        if(AF){
             GraphNode p = nextMove();
             points.add(new Point(p.getX(),p.getY()));
         }
-        if(globalAD){
+        if(AD){
             rotate(1);
             GraphNode p = nextMove();
             points.add(new Point(p.getX(),p.getY()));
             north=actualNorth;
         }
-        if(globalAA){
+        if(AA){
             rotate(2);
             GraphNode p = nextMove();
             points.add(new Point(p.getX(),p.getY()));
             north=actualNorth;
         }
-        if(globalAI){
+        if(AI){
             rotate(3);
             GraphNode p = nextMove();
             points.add(new Point(p.getX(),p.getY()));

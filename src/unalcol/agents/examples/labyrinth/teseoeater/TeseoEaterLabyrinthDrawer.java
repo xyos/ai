@@ -1,11 +1,8 @@
 package unalcol.agents.examples.labyrinth.teseoeater;
 
-import unalcol.agents.*;
 import unalcol.agents.simulate.*;
-import unalcol.agents.simulate.util.*;
 
 import java.awt.*;
-import unalcol.agents.simulate.gui.*;
 import unalcol.agents.examples.labyrinth.*;
 
 /**

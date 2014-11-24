@@ -6,7 +6,6 @@ package unalcol.agents.examples.squares;
 
 import unalcol.agents.Percept;
 import unalcol.agents.examples.reversi.Clock;
-import unalcol.agents.examples.reversi.Reversi;
 
 /**
  *
