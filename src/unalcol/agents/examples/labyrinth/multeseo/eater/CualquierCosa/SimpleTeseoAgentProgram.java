@@ -39,7 +39,11 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
   protected Stack<GraphNode> goBackSolution = new Stack<>(); //Son los nodods que debe visitar para llegar a un nodo de desición anterior
   protected LinkedList<Point> EdgeStates = new LinkedList(); //Son los nodos intermedios que hay entre dos nodos cuando se acorta el grafo
   protected ArrayList<GraphNode> TwoWallsNodes = new ArrayList<>();
+  protected ArrayList<boolean[]> badFoods = new ArrayList<>();
+  protected boolean[] previousFood= new boolean[4];
+  protected int energyLevel;
   public long stop; // Para medir el tiempo (Start esta en el constructor de la clase Graph)
+  
   
   public SimpleTeseoAgentProgram( ) {
   }
@@ -77,17 +81,17 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
     * @return Action[]
     */
     public Action compute(Percept p) {
-        boolean PF = (Boolean) p.getAttribute(language.getPercept(0));
-        boolean PD = (Boolean) p.getAttribute(language.getPercept(1));
-        boolean PA = (Boolean) p.getAttribute(language.getPercept(2));
-        boolean PI = (Boolean) p.getAttribute(language.getPercept(3));
-        boolean MT = (Boolean) p.getAttribute(language.getPercept(4));
+        boolean PF = (Boolean) p.getAttribute(language.getPercept(0)); //Pared Frente
+        boolean PD = (Boolean) p.getAttribute(language.getPercept(1)); //Pared Derecha
+        boolean PA = (Boolean) p.getAttribute(language.getPercept(2)); //Pared Atrás
+        boolean PI = (Boolean) p.getAttribute(language.getPercept(3)); //Pared Izquierda
+        boolean MT = (Boolean) p.getAttribute(language.getPercept(4)); //Treasure
         boolean RS = (Boolean) p.getAttribute(language.getPercept(5)); //Resource
         boolean RColor = false; //Resource Color
         boolean RShape = false; //Resource shape
         boolean RSize = false; //Resource Size
         boolean RWeight = false; //Resource Weight
-        int EL = (int) p.getAttribute(language.getPercept(10)); //Resource      
+        int EL = (int) p.getAttribute(language.getPercept(10)); //Energy Level      
         
         if(RS){
             RColor = (boolean) p.getAttribute(language.getPercept(6));
@@ -101,8 +105,17 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         AA=false;
         AI=false;
         
+        if(EL+1 < energyLevel){
+            boolean[] food = new boolean[4];
+            food[0]=this.previousFood[0];
+            food[1]=this.previousFood[1];
+            food[2]=this.previousFood[2];
+            food[3]=this.previousFood[3];
+            this.badFoods.add(food);
+        }
+        this.energyLevel=EL;
+        
         if (cmd.size() == 0) {
-            new java.util.Scanner(System.in).nextLine();
              /*  Borra el doble slash para comentar todo este segmento ó añade un doble slash para comentarlo
             System.out.println("---------------\nPocisión: "+actualNode.getX()+","+actualNode.getY()+"\nBrújula: "+north);
             System.out.println("AlreadyExplored: "+actualNode.isAlreadyExplored());
@@ -135,7 +148,22 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                         myGraph.reduceGraph(this.TwoWallsNodes);
                         int d = accion(PF, PD, PA, PI, MT, AF, AD, AA, AI , RS, RColor, RShape, RSize, RWeight, EL);
                         if (0 <= d && d < 4) {
-                            if(RS) cmd.add(language.getAction(4));
+                            if(RS){
+                                boolean flag1=true;
+                                for(boolean[] i:badFoods){
+                                    if(i[0]==RColor&&i[1]==RShape&&i[2]==RSize&&i[3]==RWeight){
+                                        flag1=false;
+                                        break;
+                                    }                                    
+                                }
+                                if(flag1){
+                                    cmd.add(language.getAction(4));
+                                    this.previousFood[0]=RColor;
+                                    this.previousFood[1]=RShape;
+                                    this.previousFood[2]=RSize;
+                                    this.previousFood[3]=RWeight;
+                                }
+                            }
                             for (int i = 1; i <= d; i++) {
                                 cmd.add(language.getAction(3)); //rotate
                                 rotate(1);
