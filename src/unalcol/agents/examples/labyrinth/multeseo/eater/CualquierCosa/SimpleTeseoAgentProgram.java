@@ -133,7 +133,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
             
             System.gc();
             
-            if(EL<=this.lastFoodDistance+6&&!this.findingFood){
+            if(EL<=this.lastFoodDistance+5&&!this.findingFood){
                 System.out.println("go back for food");
                 this.findingFood=true;
                 this.goBackSolution.clear();
@@ -160,18 +160,20 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                         else{
 
                             myGraph.reduceGraph(this.TwoWallsNodes);
+                            
+                            if(RS){                                
+                                if(shouldIEat(RColor,RShape,RSize,RWeight)){
+                                    if(this.findingFood) this.findingFood=false;
+                                    cmd.add(language.getAction(4));
+                                    this.previousFood[0]=RColor;
+                                    this.previousFood[1]=RShape;
+                                    this.previousFood[2]=RSize;
+                                    this.previousFood[3]=RWeight;
+                                }
+                            }
+                            
                             int d = accion(PF, PD, PA, PI, MT, AF, AD, AA, AI , RS, RColor, RShape, RSize, RWeight, EL);
                             if (0 <= d && d < 4) {
-                                if(RS){                                
-                                    if(shouldIEat(RColor,RShape,RSize,RWeight)){
-                                        if(this.findingFood) this.findingFood=false;
-                                        cmd.add(language.getAction(4));
-                                        this.previousFood[0]=RColor;
-                                        this.previousFood[1]=RShape;
-                                        this.previousFood[2]=RSize;
-                                        this.previousFood[3]=RWeight;
-                                    }
-                                }                            
                                 for (int i = 1; i <= d; i++) {
                                     cmd.add(language.getAction(3)); //rotate
                                     rotate(1);
