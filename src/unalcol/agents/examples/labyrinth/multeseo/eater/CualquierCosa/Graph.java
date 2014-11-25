@@ -47,6 +47,10 @@ public class Graph {
         ArrayList<GraphNode> nodeList = new ArrayList<>();
         nodeList.addAll(twoWallsNodes);
         for(GraphNode node:nodeList){
+            if(node.isGoodFood()){
+                twoWallsNodes.remove(node);
+                continue;
+            }
             if(node.getNeighbors().size()==2){
                 Edge a = node.getNeighbors().get(0);
                 Edge b = node.getNeighbors().get(1);

@@ -30,10 +30,10 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
   protected GraphNode previousNode = myGraph.getRoot(); //La pocisión inmediatamente anterior a actualNode
   public enum Compass {NORTH, EAST, SOUTH, WEST}
   protected Compass north = Compass.NORTH;
-  private Boolean AF;
-  private Boolean AD;
-  private Boolean AA;
-  private Boolean AI;
+  private Boolean AF; //Agent in front of me
+  private Boolean AD; //Agent to my right
+  private Boolean AA; //Agent behind me
+  private Boolean AI; //Agent to my left
   protected boolean AgentFindOtherWay=false;
   protected GraphNode AgentInThatWay=null;
   protected Stack<GraphNode> goBackSolution = new Stack<>(); //Son los nodods que debe visitar para llegar a un nodo de desición anterior
@@ -41,9 +41,9 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
   protected ArrayList<GraphNode> TwoWallsNodes = new ArrayList<>();
   protected ArrayList<boolean[]> badFoods = new ArrayList<>();
   protected boolean[] previousFood= new boolean[4];
-  protected int energyLevel;
+  protected int energyLevel=20;
   protected boolean findingFood=false;
-  protected int lastFoodDistance=0;
+  protected int lastFoodDistance=-5;
   public long stop; // Para medir el tiempo (Start esta en el constructor de la clase Graph)
   
   
@@ -120,14 +120,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         
         if (cmd.size() == 0) {
              /*Borra el doble slash para comentar todo este segmento ó añade un doble slash para comentarlo
-            System.out.println("---------------\nPocisión: "+actualNode.getX()+","+actualNode.getY()+"\nBrújula: "+north);
-            System.out.println("AlreadyExplored: "+actualNode.isAlreadyExplored());
-            System.out.println("ExploredStates[0,1,2,3]=["+actualNode.getExploredNeighboors(0)+","+
-                    actualNode.getExploredNeighboors(1)+","+actualNode.getExploredNeighboors(2)+","+
-                    actualNode.getExploredNeighboors(3)+"]");
-            System.out.println("PreviousNode("+previousNode.getX()+","+previousNode.getY()+")");
-            System.out.println("---------------"); printNodes();
-            System.out.println("---------------");
+            this.printNodes();
             new java.util.Scanner(System.in).nextLine(); //Sirve para ver el proceso paso paso.
             //*/
             
@@ -182,7 +175,6 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
 
                             } else {
                                 if (d == 5) {
-                                    myGraph.reduceGraph(this.TwoWallsNodes);
                                     if(AgentInThatWay!=null){
                                         ArrayList<Point> list = agentsPositions();
                                         Point newPoint = findNeighbor(AgentInThatWay);
@@ -481,9 +473,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
                     System.out.print("}");
                 }
             }
-            System.out.println("\nExploredStates[0,1,2,3]=["+node.getExploredNeighboors(0)+","+node.getExploredNeighboors(1)+
-                    ","+node.getExploredNeighboors(2)+","+node.getExploredNeighboors(3)+"]");
-            System.out.println("AlreadyExplored: "+node.isAlreadyExplored());
+            System.out.println("\nis there good food? "+node.isGoodFood());
             System.out.println("Choices: "+node.getChoices());
             System.out.println();
         }

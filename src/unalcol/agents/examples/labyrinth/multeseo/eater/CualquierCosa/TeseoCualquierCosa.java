@@ -93,7 +93,7 @@ public class TeseoCualquierCosa extends SimpleTeseoAgentProgram {
             actualNode.setExploredNeighboors(index, true);
             actualNode.setWalls(actualNode.getWalls()+1);
         }
-        if(actualNode.getWalls()==2 && !RS) this.TwoWallsNodes.add(actualNode);
+        if(actualNode.getWalls()==2) this.TwoWallsNodes.add(actualNode);
         actualNode.setAlreadyExplored(true);
         return aux;
     }
