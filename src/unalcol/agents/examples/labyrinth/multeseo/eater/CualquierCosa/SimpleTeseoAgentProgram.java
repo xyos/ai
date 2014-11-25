@@ -42,6 +42,8 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
   protected ArrayList<boolean[]> badFoods = new ArrayList<>();
   protected boolean[] previousFood= new boolean[4];
   protected int energyLevel;
+  protected boolean findingFood=false;
+  protected int lastFoodDistance=0;
   public long stop; // Para medir el tiempo (Start esta en el constructor de la clase Graph)
   
   
@@ -86,12 +88,13 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         boolean PA = (Boolean) p.getAttribute(language.getPercept(2)); //Pared Atrás
         boolean PI = (Boolean) p.getAttribute(language.getPercept(3)); //Pared Izquierda
         boolean MT = (Boolean) p.getAttribute(language.getPercept(4)); //Treasure
+        AF=false;   AD=false;   AA=false;   AI=false;                  //Other Agents
         boolean RS = (Boolean) p.getAttribute(language.getPercept(5)); //Resource
-        boolean RColor = false; //Resource Color
-        boolean RShape = false; //Resource shape
-        boolean RSize = false; //Resource Size
-        boolean RWeight = false; //Resource Weight
-        int EL = (int) p.getAttribute(language.getPercept(10)); //Energy Level      
+        boolean RColor = false;                                        //Resource Color
+        boolean RShape = false;                                        //Resource shape
+        boolean RSize = false;                                         //Resource Size
+        boolean RWeight = false;                                       //Resource Weight
+        int EL = (int) p.getAttribute(language.getPercept(10));        //Energy Level      
         
         if(RS){
             RColor = (boolean) p.getAttribute(language.getPercept(6));
@@ -99,11 +102,6 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
             RSize = (boolean) p.getAttribute(language.getPercept(8));
             RWeight = (boolean) p.getAttribute(language.getPercept(9));
         }
-        
-        AF=false;
-        AD=false;
-        AA=false;
-        AI=false;
         
         if(EL+1 < energyLevel){
             boolean[] food = new boolean[4];
@@ -113,10 +111,15 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
             food[3]=this.previousFood[3];
             this.badFoods.add(food);
         }
+        if(EL>this.energyLevel){
+            this.previousNode.setGoodFood(true);
+            this.lastFoodDistance=0;
+        }
+        
         this.energyLevel=EL;
         
         if (cmd.size() == 0) {
-             /*  Borra el doble slash para comentar todo este segmento ó añade un doble slash para comentarlo
+             /*Borra el doble slash para comentar todo este segmento ó añade un doble slash para comentarlo
             System.out.println("---------------\nPocisión: "+actualNode.getX()+","+actualNode.getY()+"\nBrújula: "+north);
             System.out.println("AlreadyExplored: "+actualNode.isAlreadyExplored());
             System.out.println("ExploredStates[0,1,2,3]=["+actualNode.getExploredNeighboors(0)+","+
@@ -130,68 +133,74 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
             
             System.gc();
             
-            if(AgentFindOtherWay){
-                int a = findOtherWay(PF, PD, PA, PI, AF, AD, AA, AI);
-                AgentAroundFindOtherWay(a);
+            if(EL<=this.lastFoodDistance&&!this.findingFood){
+                System.out.println("go back for food");
+                this.findingFood=true;
+                this.goBackSolution.clear();
+                this.EdgeStates.clear();
+                this.goBackForFood(actualNode);
             }
             else{
-                if(!EdgeStates.isEmpty()){
-                    Point removed = EdgeStates.peek();
-                    goTo(removed);
+                if(AgentFindOtherWay){
+                    int a = findOtherWay(PF, PD, PA, PI, AF, AD, AA, AI);
+                    if(RS) if(shouldIEat(RColor,RShape,RSize,RWeight)) cmd.add(language.getAction(4));
+                    AgentAroundFindOtherWay(a);
                 }
                 else{
-                    if(!goBackSolution.isEmpty()){
-                        processGoBackSolution();
+                    if(!EdgeStates.isEmpty()){
+                        if(RS) if(shouldIEat(RColor,RShape,RSize,RWeight)) cmd.add(language.getAction(4));
+                        Point removed = EdgeStates.peek();
+                        goTo(removed);
                     }
                     else{
-                        
-                        myGraph.reduceGraph(this.TwoWallsNodes);
-                        int d = accion(PF, PD, PA, PI, MT, AF, AD, AA, AI , RS, RColor, RShape, RSize, RWeight, EL);
-                        if (0 <= d && d < 4) {
-                            if(RS){
-                                boolean flag1=true;
-                                for(boolean[] i:badFoods){
-                                    if(i[0]==RColor&&i[1]==RShape&&i[2]==RSize&&i[3]==RWeight){
-                                        flag1=false;
-                                        break;
-                                    }                                    
+                        if(!goBackSolution.isEmpty()){
+                            if(RS) if(shouldIEat(RColor,RShape,RSize,RWeight)) cmd.add(language.getAction(4));
+                            processGoBackSolution();
+                        }
+                        else{
+
+                            myGraph.reduceGraph(this.TwoWallsNodes);
+                            int d = accion(PF, PD, PA, PI, MT, AF, AD, AA, AI , RS, RColor, RShape, RSize, RWeight, EL);
+                            if (0 <= d && d < 4) {
+                                if(RS){                                
+                                    if(shouldIEat(RColor,RShape,RSize,RWeight)){
+                                        if(this.findingFood) this.findingFood=false;
+                                        cmd.add(language.getAction(4));
+                                        this.previousFood[0]=RColor;
+                                        this.previousFood[1]=RShape;
+                                        this.previousFood[2]=RSize;
+                                        this.previousFood[3]=RWeight;
+                                    }
+                                }                            
+                                for (int i = 1; i <= d; i++) {
+                                    cmd.add(language.getAction(3)); //rotate
+                                    rotate(1);
                                 }
-                                if(flag1){
-                                    cmd.add(language.getAction(4));
-                                    this.previousFood[0]=RColor;
-                                    this.previousFood[1]=RShape;
-                                    this.previousFood[2]=RSize;
-                                    this.previousFood[3]=RWeight;
+                                int index = getIndexExploredStates(0);
+                                actualNode.setExploredNeighboors(index, true);
+                                cmd.add(language.getAction(2)); // advance
+
+                            } else {
+                                if (d == 5) {
+                                    myGraph.reduceGraph(this.TwoWallsNodes);
+                                    if(AgentInThatWay!=null){
+                                        ArrayList<Point> list = agentsPositions();
+                                        Point newPoint = findNeighbor(AgentInThatWay);
+                                        AgentInThatWay=null;
+                                        if(newPoint!=null) list.add(newPoint);
+                                        goBackDecisionNode(actualNode, list);
+                                    }else{
+                                        goBackDecisionNode(actualNode, agentsPositions());
+                                    }
                                 }
-                            }
-                            for (int i = 1; i <= d; i++) {
-                                cmd.add(language.getAction(3)); //rotate
-                                rotate(1);
-                            }
-                            int index = getIndexExploredStates(0);
-                            actualNode.setExploredNeighboors(index, true);
-                            cmd.add(language.getAction(2)); // advance
-                            
-                        } else {
-                            if (d == 5) {
-                                myGraph.reduceGraph(this.TwoWallsNodes);
-                                if(AgentInThatWay!=null){
-                                    ArrayList<Point> list = agentsPositions();
-                                    Point newPoint = findNeighbor(AgentInThatWay);
-                                    AgentInThatWay=null;
-                                    if(newPoint!=null) list.add(newPoint);
-                                    goBackDecisionNode(actualNode, list);
-                                }else{
-                                    goBackDecisionNode(actualNode, agentsPositions());
+                                if (d == -1) {
+                                    cmd.add(language.getAction(1)); // die
                                 }
-                            }
-                            if (d == -1) {
-                                cmd.add(language.getAction(1)); // die
                             }
                         }
                     }
                 }
-            }            
+            }
         }
         String x = cmd.get(0);
         if (x.equals(language.getAction(1))) {
@@ -203,6 +212,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         }
         if(x.equals(language.getAction(2))){
             if(!AF){
+                this.lastFoodDistance++;
                 if(this.AgentFindOtherWay){
                     GraphNode auxNode=nextMove();
                     actualNode=myGraph.SearchNode(auxNode.getX(),auxNode.getY());
@@ -271,6 +281,22 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
     private void goBackDecisionNode(GraphNode root, ArrayList<Point> list) {
         ExpansionTreeSearch searchTree = new ExpansionTreeSearch(root, list);
         TreeNode node = searchTree.Ids(100);
+        if(node==null){
+            //System.out.println("\nLa expansión no encontro ningún nodo");
+            cmd.add(language.getAction(0)); // no-op
+            return;
+        }
+        while(node.getParent()!=null){
+            goBackSolution.push(node.getMyGraphNode());
+            node=node.getParent();
+        }
+        processGoBackSolution();
+    }
+    
+    private void goBackForFood(GraphNode root){
+        ArrayList<Point> list = new ArrayList<>();
+        ExpansionTreeSearch searchTree = new ExpansionTreeSearch(root, list);
+        TreeNode node = searchTree.IdsFindFood(100);
         if(node==null){
             //System.out.println("\nLa expansión no encontro ningún nodo");
             cmd.add(language.getAction(0)); // no-op
@@ -423,6 +449,15 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
             }
         }
         return null;
+    }
+    
+    protected boolean shouldIEat(boolean rColor,boolean rShape,boolean rSize,boolean rWeight){
+        for(boolean[] i:this.badFoods){
+            if(i[0]==rColor&&i[1]==rShape&&i[2]==rSize&&i[3]==rWeight){
+                return false;
+            }
+        }
+        return true;
     }
     
     public void printNodes(){

@@ -149,4 +149,46 @@ public class ExpansionTreeSearch {
         return null;
     }
     
+    public TreeNode IdsFindFood(int lim){
+        ArrayList<Point> agentsLocations= new ArrayList<>();
+        this.idsNoPosibleSolution=false;
+        ArrayList<TreeNode> list = new ArrayList<>();
+        Stack<TreeNode> stack = new Stack<>();
+        for(int i=1;i<=lim;i++){
+            System.gc();
+            stack.clear();
+            this.idsNoPosibleSolution=true;
+            initTree();
+            agentsLocations.addAll(this.otherAgents);
+            this.limitDepth=i;
+            stack.push(tree.getRoot());
+            while(!stack.isEmpty()){
+                actualNode = stack.pop();
+                if(actualNode.getMyGraphNode().isGoodFood() && !actualNode.getMyGraphNode().equals(this.root)){
+                    return actualNode;
+                }
+                list.clear();
+                sucesor(list);
+                Collections.shuffle(list);
+                for(TreeNode n:list){
+                    boolean avoidAgent=false;
+                    for(Point p:agentsLocations){
+                        if(p.x==n.getMyGraphNode().getX()&&p.y==n.getMyGraphNode().getY()){
+                            avoidAgent=true;
+                            break;
+                        }
+                    }
+                    if(!avoidAgent){
+                        stack.push(n);
+                    }
+                }
+                agentsLocations.clear();
+            }
+            if(this.idsNoPosibleSolution){
+                return null;
+            }
+        }
+        return null;
+    }
+    
 }

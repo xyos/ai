@@ -21,6 +21,15 @@ public class GraphNode {
     private int walls;
     private final boolean [] exploredNeighboors;
     private boolean alreadyExplored;
+    private boolean goodFood;
+
+    public boolean isGoodFood() {
+        return goodFood;
+    }
+
+    public void setGoodFood(boolean goodFood) {
+        this.goodFood = goodFood;
+    }
 
     public boolean getExploredNeighboors(int i) {
         return exploredNeighboors[i];
@@ -133,6 +142,7 @@ public class GraphNode {
         this.y=y;
         this.walls=0;
         this.alreadyExplored=false;
+        this.goodFood=false;
         this.exploredNeighboors= new boolean[4];
         this.exploredNeighboors[0]=false;
         this.exploredNeighboors[1]=false;
