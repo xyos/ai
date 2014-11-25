@@ -143,33 +143,31 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
             else{
                 if(AgentFindOtherWay){
                     int a = findOtherWay(PF, PD, PA, PI, AF, AD, AA, AI);
-                    if(RS) if(shouldIEat(RColor,RShape,RSize,RWeight)) cmd.add(language.getAction(4));
+                    this.shouldIEat(RS, RColor, RShape, RSize, RWeight);
                     AgentAroundFindOtherWay(a);
                 }
                 else{
                     if(!EdgeStates.isEmpty()){
-                        if(RS) if(shouldIEat(RColor,RShape,RSize,RWeight)) cmd.add(language.getAction(4));
+                        this.shouldIEat(RS, RColor, RShape, RSize, RWeight);
                         Point removed = EdgeStates.peek();
                         goTo(removed);
                     }
                     else{
                         if(!goBackSolution.isEmpty()){
-                            if(RS) if(shouldIEat(RColor,RShape,RSize,RWeight)) cmd.add(language.getAction(4));
+                            this.shouldIEat(RS, RColor, RShape, RSize, RWeight);
                             processGoBackSolution();
                         }
                         else{
 
                             myGraph.reduceGraph(this.TwoWallsNodes);
                             
-                            if(RS){                                
-                                if(shouldIEat(RColor,RShape,RSize,RWeight)){
-                                    if(this.findingFood) this.findingFood=false;
-                                    cmd.add(language.getAction(4));
-                                    this.previousFood[0]=RColor;
-                                    this.previousFood[1]=RShape;
-                                    this.previousFood[2]=RSize;
-                                    this.previousFood[3]=RWeight;
-                                }
+                            if(RS){
+                                this.shouldIEat(RS, RColor, RShape, RSize, RWeight);
+                                if(this.findingFood) this.findingFood=false;
+                                this.previousFood[0]=RColor;
+                                this.previousFood[1]=RShape;
+                                this.previousFood[2]=RSize;
+                                this.previousFood[3]=RWeight;                                
                             }
                             
                             int d = accion(PF, PD, PA, PI, MT, AF, AD, AA, AI , RS, RColor, RShape, RSize, RWeight, EL);
@@ -453,13 +451,21 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         return null;
     }
     
-    protected boolean shouldIEat(boolean rColor,boolean rShape,boolean rSize,boolean rWeight){
-        for(boolean[] i:this.badFoods){
-            if(i[0]==rColor&&i[1]==rShape&&i[2]==rSize&&i[3]==rWeight){
-                return false;
+    protected void shouldIEat(boolean RS,boolean rColor,boolean rShape,boolean rSize,boolean rWeight){
+        if(RS){
+            if(actualNode.isGoodFood()){
+                cmd.add(language.getAction(4));
+                //cmd.add(language.getAction(4));
             }
+            else{
+                for(boolean[] i:this.badFoods){
+                    if(i[0]==rColor&&i[1]==rShape&&i[2]==rSize&&i[3]==rWeight){
+                        return;
+                    }
+                }
+                cmd.add(language.getAction(4));
+            }            
         }
-        return true;
     }
     
     public void printNodes(){

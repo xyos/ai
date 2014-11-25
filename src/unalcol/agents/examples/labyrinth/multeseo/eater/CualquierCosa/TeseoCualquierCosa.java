@@ -58,7 +58,7 @@ public class TeseoCualquierCosa extends SimpleTeseoAgentProgram {
         return stack;
     }
     
-    public Stack<Integer> analyzePerception(boolean PF,boolean PD,boolean PA, boolean PI){
+    public Stack<Integer> analyzePerception(boolean PF,boolean PD,boolean PA, boolean PI, boolean RS){
         Stack<Integer> aux = new Stack<>();
         actualNode.setWalls(0);
         
@@ -93,7 +93,7 @@ public class TeseoCualquierCosa extends SimpleTeseoAgentProgram {
             actualNode.setExploredNeighboors(index, true);
             actualNode.setWalls(actualNode.getWalls()+1);
         }
-        if(actualNode.getWalls()==2) this.TwoWallsNodes.add(actualNode);
+        if(actualNode.getWalls()==2 && !RS) this.TwoWallsNodes.add(actualNode);
         actualNode.setAlreadyExplored(true);
         return aux;
     }
@@ -138,7 +138,7 @@ public class TeseoCualquierCosa extends SimpleTeseoAgentProgram {
         Stack<Integer> posibleMoves;
         
         if(!actualNode.isAlreadyExplored()){
-            posibleMoves=analyzePerception(PF, PD, PA, PI);
+            posibleMoves=analyzePerception(PF, PD, PA, PI, RS);
         }else{
             posibleMoves=getChoicesLeft();
         }
