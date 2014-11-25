@@ -133,7 +133,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
             
             System.gc();
             
-            if(EL<=this.lastFoodDistance&&!this.findingFood){
+            if(EL<=this.lastFoodDistance+6&&!this.findingFood){
                 System.out.println("go back for food");
                 this.findingFood=true;
                 this.goBackSolution.clear();
