@@ -2,7 +2,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-package unalcol.agents.examples.labyrinth.multeseo.eater.CualquierCosa;
+package unalcol.agents.examples.labyrinth.teseoeater.cualquiercosa;
 
 import java.util.Collections;
 import java.util.Stack;

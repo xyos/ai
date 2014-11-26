@@ -4,7 +4,7 @@
  * and open the template in the editor.
  */
 
-package unalcol.agents.examples.labyrinth.multeseo.eater.CualquierCosa;
+package unalcol.agents.examples.labyrinth.teseoeater.cualquiercosa;
 
 
 import java.awt.Point;

@@ -1,4 +1,4 @@
-package unalcol.agents.examples.labyrinth.multeseo.eater.CualquierCosa;
+package unalcol.agents.examples.labyrinth.teseoeater.cualquiercosa;
 
 import java.awt.Point;
 import java.util.ArrayList;
@@ -445,9 +445,9 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
     
     protected void shouldIEat(boolean RS,boolean rColor,boolean rShape,boolean rSize,boolean rWeight){
         if(RS){
-            if(actualNode.isGoodFood()){
+            if(actualNode.isGoodFood()){ // Es posible comer n veces cuando la comida es buena.
+                cmd.add(language.getAction(4)); // Acción para comer
                 cmd.add(language.getAction(4));
-                //cmd.add(language.getAction(4));
             }
             else{
                 for(boolean[] i:this.badFoods){

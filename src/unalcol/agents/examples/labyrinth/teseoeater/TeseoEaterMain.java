@@ -2,7 +2,7 @@ package unalcol.agents.examples.labyrinth.teseoeater;
 import unalcol.agents.Agent;
 
 import unalcol.agents.examples.labyrinth.*;
-import unalcol.agents.examples.labyrinth.multeseo.eater.CualquierCosa.TeseoCualquierCosa;
+import unalcol.agents.examples.labyrinth.teseoeater.cualquiercosa.TeseoCualquierCosa;
 import unalcol.agents.simulate.util.*;
 
 public class TeseoEaterMain {
