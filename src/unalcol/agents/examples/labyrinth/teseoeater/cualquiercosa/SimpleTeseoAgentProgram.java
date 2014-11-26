@@ -43,7 +43,8 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
   protected boolean[] previousFood= new boolean[4];
   protected int energyLevel=20;
   protected boolean findingFood=false;
-  protected int lastFoodDistance=-5;
+  protected int lastFoodDistance=-7;
+  protected boolean firstMeal = false;
   public long stop; // Para medir el tiempo (Start esta en el constructor de la clase Graph)
   
   
@@ -113,6 +114,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         }
         if(EL>this.energyLevel){
             this.previousNode.setGoodFood(true);
+            if(!firstMeal) firstMeal=true;
             this.lastFoodDistance=0;
         }
         
@@ -126,7 +128,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
             
             System.gc();
             
-            if(EL<=this.lastFoodDistance+5&&!this.findingFood){
+            if(EL<=this.lastFoodDistance+7&&!this.findingFood){
                 System.out.println("go back for food");
                 this.findingFood=true;
                 this.goBackSolution.clear();
@@ -204,7 +206,7 @@ public abstract class SimpleTeseoAgentProgram  implements AgentProgram{
         }
         if(x.equals(language.getAction(2))){
             if(!AF){
-                this.lastFoodDistance++;
+                if(this.firstMeal) this.lastFoodDistance++;
                 if(this.AgentFindOtherWay){
                     GraphNode auxNode=nextMove();
                     actualNode=myGraph.SearchNode(auxNode.getX(),auxNode.getY());
